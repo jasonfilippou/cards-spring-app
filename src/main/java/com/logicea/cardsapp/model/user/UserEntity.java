@@ -40,12 +40,12 @@ public class UserEntity {
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    @NonNull @NotBlank private UserRole userRole;
+    @NonNull @NotBlank private UserRole role;
 
-    public UserEntity(@NonNull String email, @NonNull String password, @NonNull UserRole userRole) {
+    public UserEntity(@NonNull String email, @NonNull String password, @NonNull UserRole role) {
         this.email = email;
         this.password = password;
-        this.userRole = userRole;
+        this.role = role;
     }
 
     @Override

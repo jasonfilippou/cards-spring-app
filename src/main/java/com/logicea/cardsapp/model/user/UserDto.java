@@ -28,5 +28,5 @@ public class UserDto {
     private String password;
 
     @Schema(example = "ADMIN")
-    private UserRole userRole;
+    private UserRole role;
 }
