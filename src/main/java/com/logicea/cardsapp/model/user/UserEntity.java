@@ -40,7 +40,7 @@ public class UserEntity {
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    @NonNull @NotBlank private UserRole role;
+    @NonNull private UserRole role;
 
     public UserEntity(@NonNull String email, @NonNull String password, @NonNull UserRole role) {
         this.email = email;

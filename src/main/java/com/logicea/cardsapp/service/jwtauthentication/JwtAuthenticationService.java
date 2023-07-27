@@ -24,18 +24,13 @@ public class JwtAuthenticationService {
    * Authenticates the &lt; username, password &gt; pair provided.
    * @param username The user's username.
    * @param password The user's password.
-   * @throws Exception if the underlying {@link AuthenticationManager} throws a {@link DisabledException} or {@link BadCredentialsException}.
+   * @throws DisabledException if the authentication manager determines that the user is disabled.
+   * @throws BadCredentialsException if the password provided did not correspond to the username provided.
    * @see AuthenticationManager
    * @see UsernamePasswordAuthenticationToken
    */
-  public void authenticate(String username, String password) throws Exception {
-    try {
+  public void authenticate(String username, String password) throws DisabledException, BadCredentialsException {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(username, password));
-    } catch (DisabledException e) {
-      throw new Exception("USER_DISABLED", e);
-    } catch (BadCredentialsException e) {
-      throw new Exception("INVALID_CREDENTIALS", e);
-    }
   }
 }

@@ -29,5 +29,5 @@ public class JwtRequest implements Serializable {
   @Email private String email;
   @Schema(example = "jasonfilpassword")
   @Size(min = 8, max = 30)
-  @NonNull @ToString.Exclude String password;
+  @NonNull @ToString.Exclude private String password;
 }

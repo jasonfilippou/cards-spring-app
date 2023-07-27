@@ -76,7 +76,7 @@ public class SecurityConfig {
         .authorizeRequests()
         .requestMatchers(
             "/cardsapi/register",
-            "/carsapi/authenticate",
+            "/cardsapi/authenticate",
                 "/swagger-ui-custom.html" ,"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**",
                 "/swagger-ui/index.html","/api-docs/**")
         .permitAll()
