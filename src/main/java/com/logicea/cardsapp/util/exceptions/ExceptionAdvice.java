@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,4 +44,28 @@ public class ExceptionAdvice {
     return new ResponseEntity<>(new ExceptionMessageContainer(exc.getMessage()), HttpStatus.UNAUTHORIZED);
   }
 
+  /**
+   * Handler for all exceptions that should return an HTTP Status code of {@link HttpStatus#CONFLICT}
+   * @param exc he {@link Exception} thrown by our application.
+   * @return A {@link ResponseEntity} with the exception's message as the body and {@link HttpStatus#CONFLICT} as the status code.
+   *
+   */
+  @ResponseBody
+  @ExceptionHandler({EmailAlreadyInDatabaseException.class})
+  @ResponseStatus(HttpStatus.CONFLICT)
+  private ResponseEntity<ExceptionMessageContainer> conflictStatusMessage(Exception exc) {
+    return new ResponseEntity<>(new ExceptionMessageContainer(exc.getMessage()), HttpStatus.CONFLICT);
+  }
+
+  /**
+   * Handler for all exceptions that should return an HTTP Status Code of {@link HttpStatus#NOT_FOUND}.
+   * @param exc The {@link Exception} thrown by our application.
+   * @return A {@link ResponseEntity} with the exception's message as the body and {@link HttpStatus#NOT_FOUND} as the status code.
+   */
+  @ResponseBody
+  @ExceptionHandler({UsernameNotFoundException.class})
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ResponseEntity<ExceptionMessageContainer> notFoundStatusMessage(Exception exc) {
+    return new ResponseEntity<>(new ExceptionMessageContainer(exc.getMessage()), HttpStatus.NOT_FOUND);
+  }
 }

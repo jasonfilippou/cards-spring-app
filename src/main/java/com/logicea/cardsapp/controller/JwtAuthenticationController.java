@@ -37,7 +37,6 @@ public class JwtAuthenticationController {
      * @param authenticationRequest An instance of {@link JwtRequest} containing the user's username and password. The password
      *                              is stored in the database in encrypted format.
      * @return A {@link ResponseEntity} over {@link JwtResponse} instances.
-     * @throws Exception if the {@link JwtAuthenticationService} throws it.
      */
     @Operation(summary = "Authenticate with your username and password")
     @ApiResponses(
@@ -61,7 +60,7 @@ public class JwtAuthenticationController {
             })
     @PostMapping(value = "/authenticate")
     public ResponseEntity<JwtResponse> createAuthenticationToken(
-            @RequestBody @Valid JwtRequest authenticationRequest) throws Exception {
+            @RequestBody @Valid JwtRequest authenticationRequest){
 
         jwtAuthenticationService.authenticate(
                 authenticationRequest.getEmail(), authenticationRequest.getPassword());

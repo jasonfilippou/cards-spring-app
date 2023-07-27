@@ -43,8 +43,9 @@ public class JwtUserDetailsService implements UserDetailsService {
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     Optional<UserEntity> user = userRepository.findByEmail(email);
     if (user.isPresent()) {
-      // Return an instance of org.springframework.security.core.userdetails.User
-      return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(), Collections.emptyList());
+      // Return an appropriate instance of org.springframework.security.core.userdetails.User
+      return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(),
+              Collections.emptyList());
     } else {
       throw new UsernameNotFoundException("User with email: " + email + " not found.");
     }
@@ -57,10 +58,10 @@ public class JwtUserDetailsService implements UserDetailsService {
    * @throws EmailAlreadyInDatabaseException If the username provided already exists in the database.
    */
   public UserDto save(UserDto newUser) throws EmailAlreadyInDatabaseException {
-    String newUserPassword = newUser.getPassword();
     try {
     UserEntity savedUser =
-        userRepository.save(new UserEntity(newUser.getEmail().trim(), encoder.encode(newUserPassword), newUser.getRole()));
+        userRepository.save(new UserEntity(newUser.getEmail().trim(), encoder.encode(newUser.getPassword()),
+                newUser.getRole()));
     return new UserDto(savedUser.getEmail(), savedUser.getPassword(), savedUser.getRole());
     } catch(DataIntegrityViolationException integrityViolationException){
       throw new EmailAlreadyInDatabaseException(newUser.getEmail().trim());
