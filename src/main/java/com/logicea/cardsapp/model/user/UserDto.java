@@ -18,6 +18,7 @@ public class UserDto {
     @NonNull
     @NotBlank
     @Email
+    @Size(min = 5, max = 50)
     private String email;
 
     @Schema(example = "jasonfilpassword")
