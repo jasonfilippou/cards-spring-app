@@ -1,0 +1,13 @@
+package com.logicea.cardsapp;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class CardsappApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
