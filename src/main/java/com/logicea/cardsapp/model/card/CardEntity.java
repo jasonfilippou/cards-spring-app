@@ -2,6 +2,7 @@ package com.logicea.cardsapp.model.card;
 
 import com.logicea.cardsapp.model.Auditable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.Objects;
@@ -30,6 +31,12 @@ public class CardEntity extends Auditable<String>{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
+    @NotBlank
+    @Size(max = 50)
+    @Column(name = "name", length = 50)
+    private String name;
+    
     @Size(max = 100)
     @Column(name = "desc", length = 100)
     private String description;

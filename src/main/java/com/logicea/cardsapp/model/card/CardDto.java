@@ -17,6 +17,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class CardDto {
     @NonNull @NotBlank
+    @Size(max = 50)
     private String name;
 
     @Size(max = 100)
