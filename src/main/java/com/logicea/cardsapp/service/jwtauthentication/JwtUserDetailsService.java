@@ -1,8 +1,12 @@
 package com.logicea.cardsapp.service.jwtauthentication;
 
+import static com.logicea.cardsapp.util.Constants.ADMIN_AUTHORITY;
+import static com.logicea.cardsapp.util.Constants.MEMBER_AUTHORITY;
+
 import com.logicea.cardsapp.controller.JwtAuthenticationController;
 import com.logicea.cardsapp.model.user.UserDto;
 import com.logicea.cardsapp.model.user.UserEntity;
+import com.logicea.cardsapp.model.user.UserRole;
 import com.logicea.cardsapp.persistence.UserRepository;
 import com.logicea.cardsapp.util.JwtRequestFilter;
 import com.logicea.cardsapp.util.exceptions.EmailAlreadyInDatabaseException;
@@ -46,7 +50,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     if (user.isPresent()) {
       // Return an appropriate instance of org.springframework.security.core.userdetails.User
       return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(),
-              Collections.emptyList());
+              Collections.singletonList(user.get().getRole() == UserRole.ADMIN ? ADMIN_AUTHORITY : MEMBER_AUTHORITY));
     } else {
       throw new UsernameNotFoundException("User with email: " + email + " not found.");
     }

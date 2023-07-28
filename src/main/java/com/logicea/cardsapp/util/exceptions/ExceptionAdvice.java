@@ -9,7 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * {@link RestControllerAdvice} for all our custom exceptions.
+ * {@link RestControllerAdvice} for all our custom exceptions, and some non-custom ones, too.
  * @author jason
  */
 @RestControllerAdvice
@@ -38,7 +38,7 @@ public class ExceptionAdvice {
    */
   @ResponseBody
   @ExceptionHandler({
-          BadCredentialsException.class
+      BadCredentialsException.class,
   })
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public ResponseEntity<ExceptionMessageContainer> unauthorizedStatusMessage(Exception exc) {
@@ -68,5 +68,19 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public ResponseEntity<ExceptionMessageContainer> notFoundStatusMessage(Exception exc) {
     return new ResponseEntity<>(new ExceptionMessageContainer(exc.getMessage()), HttpStatus.NOT_FOUND);
+  }
+
+  /**
+   * Handler for all exceptions that should return an HTTP Status Code of {@link HttpStatus#FORBIDDEN}.
+   * @param exc The {@link Exception} thrown by our application.
+   * @return A {@link ResponseEntity} with the exception's message as the body and {@link HttpStatus#FORBIDDEN} as the status code.
+   */
+  @ResponseBody
+  @ExceptionHandler({
+          InsufficientPrivilegesException.class,
+  })
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ResponseEntity<ExceptionMessageContainer> forbiddenStatusMessage(Exception exc) {
+    return new ResponseEntity<>(new ExceptionMessageContainer(exc.getMessage()), HttpStatus.FORBIDDEN);
   }
 }
