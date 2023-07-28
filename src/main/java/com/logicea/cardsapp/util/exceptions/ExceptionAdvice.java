@@ -26,7 +26,8 @@ public class ExceptionAdvice {
     HttpMessageNotReadableException.class,
     MethodArgumentNotValidException.class,
     InvalidSortByFieldException.class,
-    MethodArgumentTypeMismatchException.class
+    MethodArgumentTypeMismatchException.class,
+    BadDateFormatException.class
   })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<ExceptionMessageContainer> badRequestStatusMessage(Exception exc) {

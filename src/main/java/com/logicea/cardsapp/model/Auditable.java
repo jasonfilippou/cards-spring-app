@@ -1,5 +1,7 @@
 package com.logicea.cardsapp.model;
 
+import static com.logicea.cardsapp.util.Constants.GLOBAL_DATE_TIME_PATTERN;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -21,17 +23,17 @@ public abstract class Auditable<U> {
     @CreatedBy
     protected U createdBy;
 
-    @Column(name = "created_at", updatable = false)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "created_date_time", updatable = false)
+    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
     @CreatedDate
-    protected Date createdDate;
+    protected Date createdDateTime;
 
     @Column(name = "last_modified_by")
     @LastModifiedBy
     protected U lastModifiedBy;
 
-    @Column(name = "last_modified_date")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(name = "last_modified_date_time")
+    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
     @LastModifiedDate
-    protected Date lastModifiedDate;
+    protected Date lastModifiedDateTime;
 }

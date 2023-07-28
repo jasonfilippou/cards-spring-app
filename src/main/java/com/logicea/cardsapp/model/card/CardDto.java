@@ -1,5 +1,7 @@
 package com.logicea.cardsapp.model.card;
 
+import static com.logicea.cardsapp.util.Constants.GLOBAL_DATE_TIME_PATTERN;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.Date;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * DTO class for Cards.
@@ -37,7 +40,8 @@ public class CardDto {
     @Builder.Default
     private CardStatus status = CardStatus.TODO;
     
-    private Date createdDate;
+    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+    private Date createdDateTime;
 
     @Size(min = 5, max = 50)
     @Email

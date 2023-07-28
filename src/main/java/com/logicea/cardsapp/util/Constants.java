@@ -32,9 +32,9 @@ public final class Constants {
     public static final String NAME_FILTER_STRING = "name";
     public static final String COLOR_FILTER_STRING = "color";
     public static final String STATUS_FILTER_STRING = "status";
-    public static final String BEGIN_CREATION_DATE_FILTER_STRING = "beginDateCreated";
-    public static final String END_CREATION_DATE_FILTER_STRING = "endDateCreated";
-    public static final String CREATING_USER_FILTER_STRING = "creatingUser";
+    public static final String BEGIN_CREATION_DATE_FILTER_STRING = "begin_date_created";
+    public static final String END_CREATION_DATE_FILTER_STRING = "end_date_created";
+    public static final String CREATING_USER_FILTER_STRING = "created_by";
 
   // Two instances of SimpleGrantedAuthority corresponding to our user roles of Member or Admin.
 
@@ -43,4 +43,8 @@ public final class Constants {
 
     public static final SimpleGrantedAuthority MEMBER_AUTHORITY =
             new SimpleGrantedAuthority(UserRole.MEMBER.name());
+
+    // Our global date-time pattern, with accuracy up to seconds.
+
+    public static final String GLOBAL_DATE_TIME_PATTERN = "dd/MM/yyyy HH:mm:ss";
 }

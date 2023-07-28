@@ -8,14 +8,15 @@ import com.logicea.cardsapp.model.card.CardEntity;
 import com.logicea.cardsapp.model.card.CardStatus;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.SortOrder;
+import com.logicea.cardsapp.util.exceptions.BadDateFormatException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.userdetails.User;
@@ -26,17 +27,28 @@ import org.springframework.stereotype.Repository;
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {
 
   @PersistenceContext private EntityManager entityManager;
+  private final SimpleDateFormat dateFormatter;
+  
+  public AggregateCardQueryRepositoryImpl(){
+      dateFormatter = new SimpleDateFormat(GLOBAL_DATE_TIME_PATTERN);
+      dateFormatter.setLenient(false);
+  }
 
   @Override
-  public List<CardEntity> findCardsByProvidedFilters(AggregateGetQueryParams params, User loggedInUser) {
+  public List<CardEntity> findCardsByProvidedFilters(AggregateGetQueryParams params, User loggedInUser)
+          throws BadDateFormatException{
     // Create the CriteriaBuilder, CriteriaQuery and Root<> instances.
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<CardEntity> criteriaQuery = criteriaBuilder.createQuery(CardEntity.class);
     Root<CardEntity> cardRoot = criteriaQuery.from(CardEntity.class);
     
     // Set the predicates the conjunction of which will make up the WHERE clause.
-    List<Predicate> predicates =
-        extractPredicatesFromFilterParams(params.getFilterParams(), criteriaBuilder, cardRoot, loggedInUser);
+    List<Predicate> predicates;
+    try {
+        predicates = extractPredicatesFromFilterParams(params.getFilterParams(), criteriaBuilder, cardRoot, loggedInUser);
+    } catch(ParseException pe){
+      throw new BadDateFormatException(pe.getMessage());
+    }
     criteriaQuery.where(predicates.toArray(new Predicate[0]));
     
     // Sort the results by the desired field in the desired order.
@@ -57,7 +69,7 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
   // predicates.
   // TODO: improve the following using the Specification interface.
   private List<Predicate> extractPredicatesFromFilterParams(
-      Map<String, String> params, CriteriaBuilder cb, Root<CardEntity> root, User user) {
+      Map<String, String> params, CriteriaBuilder cb, Root<CardEntity> root, User user) throws ParseException {
     // Have to be careful to use the exact names of the fields in CardDto.
     // Also check here:
     // https://jakarta.ee/specifications/persistence/2.2/apidocs/javax/persistence/criteria/path#get(java.lang.String)
@@ -77,17 +89,15 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
     if (params.containsKey(BEGIN_CREATION_DATE_FILTER_STRING)) {
       retVal.add(
           cb.greaterThanOrEqualTo(
-              root.get("createdDate"),
-              LocalDate.parse(
-                  params.get(BEGIN_CREATION_DATE_FILTER_STRING), DateTimeFormatter.ISO_DATE)));
+              root.get("createdDateTime"),
+              dateFormatter.parse(params.get(BEGIN_CREATION_DATE_FILTER_STRING))));
     }
     // Leq than an ending date, let's hope this works...
     if (params.containsKey(END_CREATION_DATE_FILTER_STRING)) {
       retVal.add(
           cb.lessThanOrEqualTo(
-              root.get("createdDate"),
-              LocalDate.parse(
-                  params.get(END_CREATION_DATE_FILTER_STRING), DateTimeFormatter.ISO_DATE)));
+              root.get("createdDateTime"),
+              dateFormatter.parse(params.get(END_CREATION_DATE_FILTER_STRING))));
     }
     if (params.containsKey(CREATING_USER_FILTER_STRING)) {
       retVal.add(cb.equal(root.get("createdBy"), params.get(CREATING_USER_FILTER_STRING)));

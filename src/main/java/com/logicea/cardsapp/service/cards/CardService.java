@@ -76,7 +76,7 @@ public class CardService {
                 .name(cardEntity.getName())
                 .color(cardEntity.getColor())
                 .status(cardEntity.getStatus())
-                .createdDate(cardEntity.getCreatedDate())
+                .createdDateTime(cardEntity.getCreatedDateTime())
                 .createdBy(cardEntity.getCreatedBy())
                 .build();
     }
