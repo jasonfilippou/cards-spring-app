@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * {@link RestControllerAdvice} for all our custom exceptions, and some non-custom ones, too.
@@ -24,7 +25,8 @@ public class ExceptionAdvice {
   @ExceptionHandler({
     HttpMessageNotReadableException.class,
     MethodArgumentNotValidException.class,
-    InvalidSortByFieldException.class
+    InvalidSortByFieldException.class,
+    MethodArgumentTypeMismatchException.class
   })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<ExceptionMessageContainer> badRequestStatusMessage(Exception exc) {
