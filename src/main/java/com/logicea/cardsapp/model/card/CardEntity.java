@@ -38,12 +38,11 @@ public class CardEntity extends Auditable<String>{
     private String name;
     
     @Size(max = 100)
-    @Column(name = "desc", length = 100)
+    @Column(name = "description", length = 100)
     private String description;
 
     @Pattern(regexp = "^#[a-zA-Z0-9]{6}$", message = "Color must start with '#' and end with exactly 6 alphanumerics",
             flags = Pattern.Flag.CASE_INSENSITIVE)
-    @Size(min = 7, max = 7) 
     @Column(name = "color", length = 7)
     private String color;
 

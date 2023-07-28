@@ -7,17 +7,17 @@
 The code has been developed and tested on a Linux Mint 20.2 Uma machine with kernel version `5.15.0-75-generic` and Java 17.
 We employ a MySQL database for persistence, and an H2 database for tests. The `application.properties` file of the 
 application lets it create all the entities on the database, so minimal database legwork should be required.
-You just need to create the database `cards_app`, a user named `cardsappuser` with the provided password
-and grant all privileges on `cards_app` to `cardsappuser`. This is how we did it in our machine. Open up a shell and type:
+You just need to create the database `cards_app_db`, a user named `cardsappuser` with the provided password
+and grant all privileges on `cards_app_db` to `cardsappuser`. This is how we did it in our machine. Open up a shell and type:
 
 ```shell
 sudo mysql --password 
 ```
 Input your `sudo` password, and this should open up the `mysql` prompt, where you should type:
 ```mysql
-create database cards_app; -- Creates the new database
+create database cards_app_db; -- Creates the new database
 create user 'cardsappuser'@'%' identified by 'ThePassword882100##'; -- Same password we have in the application.properties
-grant all on cards_app.* to 'cardsappuser'@'%'; -- Gives all privileges to the new user on the newly created database
+grant all on cards_app_db.* to 'cardsappuser'@'%'; -- Gives all privileges to the new user on the newly created database
 ```
 
 You can now run the Spring Server by running the `CardsApplication` class. Once the server

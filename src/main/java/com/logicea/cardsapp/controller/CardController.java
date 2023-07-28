@@ -80,7 +80,4 @@ public class CardController {
                         .sortOrder(sortOrder)
                         .build())));
     }
-
-
-
 }

@@ -32,7 +32,6 @@ public class CardDto {
 
     @Pattern(regexp = "^#[a-zA-Z0-9]{6}$", message = "Color must start with # and end with exactly 6 alphanumerics",
             flags = Pattern.Flag.CASE_INSENSITIVE)
-    @Size(min = 7, max = 7)
     private String color;
 
     @Builder.Default

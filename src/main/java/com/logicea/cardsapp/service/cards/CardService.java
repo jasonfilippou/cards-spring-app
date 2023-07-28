@@ -1,5 +1,6 @@
 package com.logicea.cardsapp.service.cards;
 
+
 import static com.logicea.cardsapp.util.Constants.CREATING_USER_FILTER_STRING;
 import static com.logicea.cardsapp.util.Utilities.userHasAccessToCard;
 import static com.logicea.cardsapp.util.Utilities.userIsMember;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Service;
 public class CardService {
     
     private final CardRepository cardRepository;
-    
+
     public CardDto getCard(Long id) throws CardNotFoundException, InsufficientPrivilegesException {
         Optional<CardEntity> card = cardRepository.findById(id);
         // Did we even find a card with the designated id?
@@ -60,7 +61,7 @@ public class CardService {
                 .map(this::fromCardEntityToCardDto)
                 .collect(Collectors.toList());
     }
-    
+
     private boolean filterParamsIncludeOtherMemberCards(User user, Map<String, String> filterParams){
         if(!filterParams.containsKey(CREATING_USER_FILTER_STRING)){
             return false;
@@ -72,7 +73,7 @@ public class CardService {
         return CardDto.builder()
                 .id(cardEntity.getId())
                 .description(cardEntity.getDescription())
-                .name(cardEntity.getDescription())
+                .name(cardEntity.getName())
                 .color(cardEntity.getColor())
                 .status(cardEntity.getStatus())
                 .createdDate(cardEntity.getCreatedDate())
