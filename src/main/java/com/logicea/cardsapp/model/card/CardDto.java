@@ -2,12 +2,13 @@ package com.logicea.cardsapp.model.card;
 
 import static com.logicea.cardsapp.util.Constants.GLOBAL_DATE_TIME_PATTERN;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -41,7 +42,8 @@ public class CardDto {
     private CardStatus status = CardStatus.TODO;
     
     @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    private Date createdDateTime;
+    @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+    private LocalDateTime createdDateTime;
 
     @Size(min = 5, max = 50)
     @Email
