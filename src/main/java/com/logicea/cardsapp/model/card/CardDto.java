@@ -1,8 +1,11 @@
 package com.logicea.cardsapp.model.card;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.Date;
 import lombok.*;
 
 /**
@@ -16,9 +19,13 @@ import lombok.*;
 @Builder
 @EqualsAndHashCode
 public class CardDto {
+    @Schema(example = "1", hidden = true)
+    private Long id;
+
     @NonNull @NotBlank
     @Size(max = 50)
     private String name;
+
 
     @Size(max = 100)
     private String description;
@@ -30,4 +37,10 @@ public class CardDto {
 
     @Builder.Default
     private CardStatus status = CardStatus.TODO;
+    
+    private Date createdDate;
+
+    @Size(min = 5, max = 50)
+    @Email
+    private String createdBy;
 }

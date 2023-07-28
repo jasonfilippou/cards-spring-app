@@ -23,7 +23,8 @@ public class ExceptionAdvice {
   @ResponseBody
   @ExceptionHandler({
     HttpMessageNotReadableException.class,
-    MethodArgumentNotValidException.class
+    MethodArgumentNotValidException.class,
+    InvalidSortByFieldException.class
   })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<ExceptionMessageContainer> badRequestStatusMessage(Exception exc) {
@@ -63,7 +64,7 @@ public class ExceptionAdvice {
    * @return A {@link ResponseEntity} with the exception's message as the body and {@link HttpStatus#NOT_FOUND} as the status code.
    */
   @ResponseBody
-  @ExceptionHandler({UsernameNotFoundException.class})
+  @ExceptionHandler({UsernameNotFoundException.class, CardNotFoundException.class})
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public ResponseEntity<ExceptionMessageContainer> notFoundStatusMessage(Exception exc) {
     return new ResponseEntity<>(new ExceptionMessageContainer(exc.getMessage()), HttpStatus.NOT_FOUND);

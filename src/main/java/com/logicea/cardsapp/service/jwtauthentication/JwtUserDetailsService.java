@@ -4,6 +4,7 @@ import com.logicea.cardsapp.controller.JwtAuthenticationController;
 import com.logicea.cardsapp.model.user.UserDto;
 import com.logicea.cardsapp.model.user.UserEntity;
 import com.logicea.cardsapp.persistence.UserRepository;
+import com.logicea.cardsapp.util.JwtRequestFilter;
 import com.logicea.cardsapp.util.exceptions.EmailAlreadyInDatabaseException;
 import java.util.Collections;
 import java.util.Optional;

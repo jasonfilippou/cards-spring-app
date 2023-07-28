@@ -1,6 +1,6 @@
 package com.logicea.cardsapp.config;
 
-import com.logicea.cardsapp.service.jwtauthentication.JwtRequestFilter;
+import com.logicea.cardsapp.util.JwtRequestFilter;
 import com.logicea.cardsapp.service.jwtauthentication.JwtUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

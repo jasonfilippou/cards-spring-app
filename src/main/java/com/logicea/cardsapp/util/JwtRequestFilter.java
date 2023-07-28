@@ -1,8 +1,10 @@
-package com.logicea.cardsapp.service.jwtauthentication;
+package com.logicea.cardsapp.util;
 
 import static com.logicea.cardsapp.util.Constants.AUTH_HEADER_BEARER_PREFIX;
 
 import com.logicea.cardsapp.config.JwtAuthenticationEntryPoint;
+import com.logicea.cardsapp.service.jwtauthentication.JwtAuthenticationService;
+import com.logicea.cardsapp.service.jwtauthentication.JwtUserDetailsService;
 import com.logicea.cardsapp.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
