@@ -46,5 +46,5 @@ public final class Constants {
 
     // Our global date-time pattern, with accuracy up to seconds.
 
-    public static final String GLOBAL_DATE_TIME_PATTERN = "dd/MM/yyyy HH:mm:ss";
+    public static final String GLOBAL_DATE_TIME_PATTERN = "dd/MM/yyyy HH:mm:ss.SSS";
 }

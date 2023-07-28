@@ -27,7 +27,7 @@ import org.springframework.stereotype.Repository;
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {
 
   @PersistenceContext private EntityManager entityManager;
-  private final SimpleDateFormat dateFormatter;
+  private final SimpleDateFormat dateFormatter; // TODO: Change to DateTimeFormatter, which is immutable, hence thread-safe.
   
   public AggregateCardQueryRepositoryImpl(){
       dateFormatter = new SimpleDateFormat(GLOBAL_DATE_TIME_PATTERN);
