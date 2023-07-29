@@ -67,9 +67,6 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
   private List<Predicate> extractPredicatesFromFilterParams(
       Map<String, String> params, CriteriaBuilder cb, Root<CardEntity> root, User user) throws ParseException {
     // Have to be careful to use the exact names of the fields in CardDto.
-    // Also check here:
-    // https://jakarta.ee/specifications/persistence/2.2/apidocs/javax/persistence/criteria/path#get(java.lang.String)
-    // if you need to assist root.get() with type information.
     List<Predicate> retVal = Lists.newArrayList();
     if (params.containsKey(NAME_FILTER_STRING)) {
       retVal.add(cb.equal(root.get("name"), params.get(NAME_FILTER_STRING)));
@@ -81,14 +78,12 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
       retVal.add(
           cb.equal(root.get("status"), CardStatus.valueOf(params.get(STATUS_FILTER_STRING))));
     }
-    // Geq than a starting date, let's hope this works...
     if (params.containsKey(BEGIN_CREATION_DATE_FILTER_STRING)) {
       retVal.add(
           cb.greaterThanOrEqualTo(
               root.get("createdDateTime"),
                   LocalDateTime.parse(params.get(BEGIN_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)));
     }
-    // Leq than an ending date, let's hope this works...
     if (params.containsKey(END_CREATION_DATE_FILTER_STRING)) {
       retVal.add(
           cb.lessThanOrEqualTo(
