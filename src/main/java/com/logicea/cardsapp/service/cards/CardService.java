@@ -115,6 +115,7 @@ public class CardService {
         return !filterParams.get(CREATING_USER_FILTER_STRING).equals(user.getUsername());
     }
 
+    // The following could probably be optimized with MapStruct or BeanUtils/PropertyUtils.copyProperties().
     private CardDto fromCardEntityToCardDto(CardEntity cardEntity){
         return CardDto.builder()
                 .id(cardEntity.getId())
@@ -124,6 +125,8 @@ public class CardService {
                 .status(cardEntity.getStatus())
                 .createdDateTime(cardEntity.getCreatedDateTime())
                 .createdBy(cardEntity.getCreatedBy())
+                .lastModifiedBy(cardEntity.getLastModifiedBy())
+                .lastModifiedDateTime(cardEntity.getLastModifiedDateTime())
                 .build();
     }
 }

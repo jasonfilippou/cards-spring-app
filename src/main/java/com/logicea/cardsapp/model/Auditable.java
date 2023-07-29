@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,9 +22,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @Setter
-public abstract class Auditable<U> {
+public abstract class Auditable<U extends String> {
 
     @Column(name = "created_by", updatable = false, nullable = false)
+    @Email
+    @Size(min = 5, max = 50)
     @CreatedBy
     protected U createdBy;
 
@@ -34,6 +38,8 @@ public abstract class Auditable<U> {
 
     @Column(name = "last_modified_by")
     @LastModifiedBy
+    @Email
+    @Size(min = 5, max = 50)
     protected U lastModifiedBy;
 
     @Column(name = "last_modified_date_time")

@@ -30,7 +30,6 @@ public class CardDto {
     @Size(max = 50)
     private String name;
 
-
     @Size(max = 100)
     private String description;
 
@@ -48,4 +47,13 @@ public class CardDto {
     @Size(min = 5, max = 50)
     @Email
     private String createdBy;
+
+    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+    @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+    private LocalDateTime lastModifiedDateTime;
+
+    @Size(min = 5, max = 50)
+    @Email
+    private String lastModifiedBy;
+    
 }
