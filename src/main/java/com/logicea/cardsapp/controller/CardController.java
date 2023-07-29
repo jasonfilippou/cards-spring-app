@@ -80,6 +80,11 @@ public class CardController {
                         .sortOrder(sortOrder)
                         .build())));
     }
+    
+    @PutMapping("/card/{id}")
+    public ResponseEntity<EntityModel<CardDto>> putCard(@PathVariable Long id, @RequestBody @Valid CardDto cardDto){
+        return ResponseEntity.ok(assembler.toModel(cardService.replaceCard(id, cardDto)));
+    }
 
     @DeleteMapping("/card/{id}")
     public ResponseEntity<?> deleteCard(@PathVariable Long id){ 

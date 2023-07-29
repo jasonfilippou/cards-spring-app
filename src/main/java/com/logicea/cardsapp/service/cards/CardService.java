@@ -5,10 +5,12 @@ import static com.logicea.cardsapp.util.Constants.CREATING_USER_FILTER_STRING;
 
 import com.logicea.cardsapp.model.card.CardDto;
 import com.logicea.cardsapp.model.card.CardEntity;
+import com.logicea.cardsapp.model.card.CardStatus;
 import com.logicea.cardsapp.persistence.CardRepository;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.exceptions.CardNotFoundException;
 import com.logicea.cardsapp.util.exceptions.InsufficientPrivilegesException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class CardService {
     private final CardRepository cardRepository;
     private final AccessCheckService accessCheckService;
 
+    @Transactional(readOnly = true)
     public CardDto getCard(Long id) throws CardNotFoundException, InsufficientPrivilegesException {
         Optional<CardEntity> card = cardRepository.findById(id);
         // Did we even find a card with the designated id?
@@ -39,7 +43,36 @@ public class CardService {
         // Ok, you're either an admin or a member with access to the card, so here's the card.
         return fromCardEntityToCardDto(card.get());
     }
+    
+    @Transactional
+    public CardDto replaceCard(Long id, CardDto cardDto){
+        Optional<CardEntity> cardOptional = cardRepository.findById(id);
+        if(cardOptional.isEmpty()){
+            throw new CardNotFoundException(id);
+        }
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!accessCheckService.userHasAccessToCard(loggedInUser, cardOptional.get())){
+            throw new InsufficientPrivilegesException(loggedInUser.getUsername());
+        }
+        CardEntity oldCard = cardOptional.get();
+        // Need to save the creation information before we save() again.
+        LocalDateTime createdDateTime = oldCard.getCreatedDateTime();
+        String createdBy = oldCard.getCreatedBy();
+        CardEntity newCard = cardRepository.save(
+                CardEntity.builder()
+                        .id(oldCard.getId())
+                        .name(cardDto.getName())
+                        .color(cardDto.getColor())
+                        .description(cardDto.getDescription())
+                        .status(Optional.ofNullable(cardDto.getStatus()).orElse(CardStatus.TODO))
+                        .build());
+        // Need to set those parameters explicitly because of the way save() works.
+        newCard.setCreatedDateTime(createdDateTime);
+        newCard.setCreatedBy(createdBy);
+        return fromCardEntityToCardDto(newCard);
+    }
 
+    @Transactional
     public CardDto storeCard(CardDto cardDto){
         CardEntity storedCard = cardRepository.save(
                 CardEntity.builder()
@@ -50,6 +83,7 @@ public class CardService {
         return fromCardEntityToCardDto(storedCard);
     }
 
+    @Transactional(readOnly = true)
     public List<CardDto> getAllCardsByFilter(AggregateGetQueryParams params) throws InsufficientPrivilegesException {
         User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // Are you by any chance a member and you've requested another member's cards in your filters?
@@ -61,6 +95,7 @@ public class CardService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional
     public void deleteCard(Long id) throws CardNotFoundException, InsufficientPrivilegesException{
         Optional<CardEntity> card = cardRepository.findById(id);
         if(card.isEmpty()){
