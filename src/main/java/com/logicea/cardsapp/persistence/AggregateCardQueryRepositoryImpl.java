@@ -16,7 +16,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.userdetails.User;
@@ -27,12 +28,7 @@ import org.springframework.stereotype.Repository;
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {
 
   @PersistenceContext private EntityManager entityManager;
-  private final SimpleDateFormat dateFormatter; // TODO: Change to DateTimeFormatter, which is immutable, hence thread-safe.
-  
-  public AggregateCardQueryRepositoryImpl(){
-      dateFormatter = new SimpleDateFormat(GLOBAL_DATE_TIME_PATTERN);
-      dateFormatter.setLenient(false);
-  }
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(GLOBAL_DATE_TIME_PATTERN);
 
   @Override
   public List<CardEntity> findCardsByProvidedFilters(AggregateGetQueryParams params, User loggedInUser)
@@ -90,14 +86,14 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
       retVal.add(
           cb.greaterThanOrEqualTo(
               root.get("createdDateTime"),
-              dateFormatter.parse(params.get(BEGIN_CREATION_DATE_FILTER_STRING))));
+                  LocalDateTime.parse(params.get(BEGIN_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)));
     }
     // Leq than an ending date, let's hope this works...
     if (params.containsKey(END_CREATION_DATE_FILTER_STRING)) {
       retVal.add(
           cb.lessThanOrEqualTo(
               root.get("createdDateTime"),
-              dateFormatter.parse(params.get(END_CREATION_DATE_FILTER_STRING))));
+                  LocalDateTime.parse(params.get(END_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)));
     }
     if (params.containsKey(CREATING_USER_FILTER_STRING)) {
       retVal.add(cb.equal(root.get("createdBy"), params.get(CREATING_USER_FILTER_STRING)));
