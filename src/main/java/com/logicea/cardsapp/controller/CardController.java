@@ -80,4 +80,10 @@ public class CardController {
                         .sortOrder(sortOrder)
                         .build())));
     }
+
+    @DeleteMapping("/card/{id}")
+    public ResponseEntity<?> deleteCard(@PathVariable Long id){ 
+        cardService.deleteCard(id);
+        return ResponseEntity.noContent().build();
+    }
 }

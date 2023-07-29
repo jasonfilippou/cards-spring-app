@@ -1,11 +1,11 @@
 package com.logicea.cardsapp.persistence;
 
 import static com.logicea.cardsapp.util.Constants.*;
-import static com.logicea.cardsapp.util.Utilities.userIsAdmin;
 
 import com.google.common.collect.Lists;
 import com.logicea.cardsapp.model.card.CardEntity;
 import com.logicea.cardsapp.model.card.CardStatus;
+import com.logicea.cardsapp.service.cards.AccessCheckService;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.SortOrder;
 import com.logicea.cardsapp.util.exceptions.BadDateFormatException;
@@ -20,14 +20,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @LoggedRepository
+@RequiredArgsConstructor
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {
 
   @PersistenceContext private EntityManager entityManager;
+  
+  private final AccessCheckService accessCheckService;
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(GLOBAL_DATE_TIME_PATTERN);
 
   @Override
@@ -95,7 +99,7 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
     }
     // Don't forget that if the user isn't an admin, we can only allow them access 
     // to cards they themselves have created.
-    if(!userIsAdmin(user)){
+    if(!accessCheckService.userIsAdmin(user)){
       retVal.add(cb.equal(root.get("createdBy"), user.getUsername()));
     }
     return retVal;

@@ -2,8 +2,6 @@ package com.logicea.cardsapp.service.cards;
 
 
 import static com.logicea.cardsapp.util.Constants.CREATING_USER_FILTER_STRING;
-import static com.logicea.cardsapp.util.Utilities.userHasAccessToCard;
-import static com.logicea.cardsapp.util.Utilities.userIsMember;
 
 import com.logicea.cardsapp.model.card.CardDto;
 import com.logicea.cardsapp.model.card.CardEntity;
@@ -25,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class CardService {
     
     private final CardRepository cardRepository;
+    private final AccessCheckService accessCheckService;
 
     public CardDto getCard(Long id) throws CardNotFoundException, InsufficientPrivilegesException {
         Optional<CardEntity> card = cardRepository.findById(id);
@@ -34,7 +33,7 @@ public class CardService {
         }
         // Do you have sufficient privileges for viewing the card?
         User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!userHasAccessToCard(loggedInUser, card.get())){
+        if(!accessCheckService.userHasAccessToCard(loggedInUser, card.get())){
             throw new InsufficientPrivilegesException(loggedInUser.getUsername());
         }
         // Ok, you're either an admin or a member with access to the card, so here's the card.
@@ -54,12 +53,24 @@ public class CardService {
     public List<CardDto> getAllCardsByFilter(AggregateGetQueryParams params) throws InsufficientPrivilegesException {
         User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // Are you by any chance a member and you've requested another member's cards in your filters?
-        if(userIsMember(loggedInUser) && filterParamsIncludeOtherMemberCards(loggedInUser, params.getFilterParams())){
+        if(accessCheckService.userIsMember(loggedInUser) && filterParamsIncludeOtherMemberCards(loggedInUser, params.getFilterParams())){
             throw new InsufficientPrivilegesException(loggedInUser.getUsername());
         }
         return cardRepository.findCardsByProvidedFilters(params, loggedInUser).stream()
                 .map(this::fromCardEntityToCardDto)
                 .collect(Collectors.toList());
+    }
+    
+    public void deleteCard(Long id) throws CardNotFoundException, InsufficientPrivilegesException{
+        Optional<CardEntity> card = cardRepository.findById(id);
+        if(card.isEmpty()){
+            throw new CardNotFoundException(id);
+        }
+        User loggedInUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(!accessCheckService.userHasAccessToCard(loggedInUser, card.get())){
+            throw new InsufficientPrivilegesException(loggedInUser.getUsername());
+        }
+        cardRepository.deleteById(id);
     }
 
     private boolean filterParamsIncludeOtherMemberCards(User user, Map<String, String> filterParams){
