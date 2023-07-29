@@ -5,6 +5,7 @@ import static com.logicea.cardsapp.util.Constants.JWT_TOKEN_VALIDITY;
 import com.logicea.cardsapp.controller.JwtAuthenticationController;
 import com.logicea.cardsapp.service.jwtauthentication.JwtAuthenticationService;
 import com.logicea.cardsapp.service.jwtauthentication.JwtUserDetailsService;
+import com.logicea.cardsapp.util.logger.Logged;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
  * @see JwtAuthenticationService
  */
 @Component
+@Logged
 public class JwtTokenUtil implements Serializable {
   @Serial private static final long serialVersionUID = -2550185165626007488L;
 

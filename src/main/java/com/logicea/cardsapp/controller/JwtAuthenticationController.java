@@ -6,6 +6,7 @@ import com.logicea.cardsapp.model.user.UserDto;
 import com.logicea.cardsapp.service.jwtauthentication.JwtAuthenticationService;
 import com.logicea.cardsapp.service.jwtauthentication.JwtUserDetailsService;
 import com.logicea.cardsapp.util.JwtTokenUtil;
+import com.logicea.cardsapp.util.logger.Logged;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "1. Authentication API")
 @Validated
+@Logged
 public class JwtAuthenticationController {
 
   private final JwtTokenUtil jwtTokenUtil;

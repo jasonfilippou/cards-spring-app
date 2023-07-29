@@ -8,6 +8,7 @@ import com.logicea.cardsapp.service.cards.CardService;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.SortOrder;
 import com.logicea.cardsapp.util.exceptions.InvalidSortByFieldException;
+import com.logicea.cardsapp.util.logger.Logged;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "2. Cards API")
 @Validated
+@Logged
 public class CardController {
 
   private final CardService cardService;

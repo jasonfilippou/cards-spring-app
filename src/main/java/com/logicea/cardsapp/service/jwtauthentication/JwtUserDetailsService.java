@@ -10,6 +10,7 @@ import com.logicea.cardsapp.model.user.UserRole;
 import com.logicea.cardsapp.persistence.UserRepository;
 import com.logicea.cardsapp.util.JwtRequestFilter;
 import com.logicea.cardsapp.util.exceptions.EmailAlreadyInDatabaseException;
+import com.logicea.cardsapp.util.logger.Logged;
 import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Logged
 public class JwtUserDetailsService implements UserDetailsService {
 
   private final UserRepository userRepository;

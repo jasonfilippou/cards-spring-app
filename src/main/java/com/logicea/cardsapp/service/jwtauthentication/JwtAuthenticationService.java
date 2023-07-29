@@ -1,5 +1,6 @@
 package com.logicea.cardsapp.service.jwtauthentication;
 
+import com.logicea.cardsapp.util.logger.Logged;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Logged
 public class JwtAuthenticationService {
 
   private final AuthenticationManager authenticationManager;

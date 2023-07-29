@@ -25,7 +25,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@LoggedRepository
 @RequiredArgsConstructor
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {
 

@@ -4,10 +4,12 @@ import static com.logicea.cardsapp.util.Constants.ADMIN_AUTHORITY;
 import static com.logicea.cardsapp.util.Constants.MEMBER_AUTHORITY;
 
 import com.logicea.cardsapp.model.card.CardEntity;
+import com.logicea.cardsapp.util.logger.Logged;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 @Service
+@Logged
 public class AccessCheckService {
 
   public boolean userIsMember(User user) {

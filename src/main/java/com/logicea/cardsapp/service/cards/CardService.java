@@ -9,6 +9,7 @@ import com.logicea.cardsapp.persistence.CardRepository;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.exceptions.CardNotFoundException;
 import com.logicea.cardsapp.util.exceptions.InsufficientPrivilegesException;
+import com.logicea.cardsapp.util.logger.Logged;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Logged
 public class CardService {
 
   private final CardRepository cardRepository;
