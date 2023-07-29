@@ -11,9 +11,8 @@ import org.hibernate.proxy.HibernateProxy;
 
 /**
  * DB entity class for cards.
- * 
- * @author jason 
- * 
+ *
+ * @author jason
  * @see CardDto
  */
 @Entity
@@ -24,48 +23,54 @@ import org.hibernate.proxy.HibernateProxy;
 @AllArgsConstructor
 @Builder
 @Table(name = "CARD")
-public class CardEntity extends Auditable<String>{
+public class CardEntity extends Auditable<String> {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @NonNull
-    @NotBlank
-    @Size(max = 50)
-    @Column(name = "name", length = 50)
-    private String name;
-    
-    @Size(max = 100)
-    @Column(name = "description", length = 100)
-    private String description;
+  @NonNull
+  @NotBlank
+  @Size(max = 50)
+  @Column(name = "name", length = 50)
+  private String name;
 
-    @Pattern(regexp = "^#[a-zA-Z0-9]{6}$", message = "Color must start with '#' and end with exactly 6 alphanumerics",
-            flags = Pattern.Flag.CASE_INSENSITIVE)
-    @Column(name = "color", length = 7)
-    private String color;
+  @Size(max = 100)
+  @Column(name = "description", length = 100)
+  private String description;
 
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 11) 
-    private CardStatus status = CardStatus.TODO;
-    
-    
+  @Pattern(
+      regexp = "^#[a-zA-Z0-9]{6}$",
+      message = "Color must start with '#' and end with exactly 6 alphanumerics",
+      flags = Pattern.Flag.CASE_INSENSITIVE)
+  @Column(name = "color", length = 7)
+  private String color;
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        CardEntity that = (CardEntity) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
-    }
+  @Builder.Default
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", length = 11)
+  private CardStatus status = CardStatus.TODO;
 
-    @Override
-    public final int hashCode() {
-        return getClass().hashCode();
-    }
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy
+            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+            : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) return false;
+    CardEntity that = (CardEntity) o;
+    return getId() != null && Objects.equals(getId(), that.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    return getClass().hashCode();
+  }
 }

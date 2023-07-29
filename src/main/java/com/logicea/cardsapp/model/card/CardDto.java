@@ -17,48 +17,48 @@ import org.springframework.format.annotation.DateTimeFormat;
  * DTO class for Cards.
  *
  * @author jason
- *
  * @see CardEntity
  */
 @Data
 @Builder
 @EqualsAndHashCode
 public class CardDto {
-    @Schema(example = "1", hidden = true)
-    private Long id;
+  @Schema(example = "1", hidden = true)
+  private Long id;
 
-    @NonNull @NotBlank
-    @Size(max = 50)
-    private String name;
+  @NonNull
+  @NotBlank
+  @Size(max = 50)
+  private String name;
 
-    @Size(max = 100)
-    private String description;
+  @Size(max = 100)
+  private String description;
 
-    @Pattern(regexp = "^#[a-zA-Z0-9]{6}$", message = "Color must start with # and end with exactly 6 alphanumerics",
-            flags = Pattern.Flag.CASE_INSENSITIVE)
-    private String color;
+  @Pattern(
+      regexp = "^#[a-zA-Z0-9]{6}$",
+      message = "Color must start with # and end with exactly 6 alphanumerics",
+      flags = Pattern.Flag.CASE_INSENSITIVE)
+  private String color;
 
-    @Builder.Default
-    private CardStatus status = CardStatus.TODO;
-    
-    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime createdDateTime;
+  @Builder.Default private CardStatus status = CardStatus.TODO;
 
-    @Size(min = 5, max = 50)
-    @Email
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String createdBy;
+  @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private LocalDateTime createdDateTime;
 
-    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime lastModifiedDateTime;
+  @Size(min = 5, max = 50)
+  @Email
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private String createdBy;
 
-    @Size(min = 5, max = 50)
-    @Email
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String lastModifiedBy;
-    
+  @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private LocalDateTime lastModifiedDateTime;
+
+  @Size(min = 5, max = 50)
+  @Email
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private String lastModifiedBy;
 }

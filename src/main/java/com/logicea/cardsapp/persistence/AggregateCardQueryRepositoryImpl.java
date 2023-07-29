@@ -29,35 +29,42 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {
 
-  @PersistenceContext private EntityManager entityManager;
-  
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern(GLOBAL_DATE_TIME_PATTERN);
   private final AccessCheckService accessCheckService;
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(GLOBAL_DATE_TIME_PATTERN);
+  @PersistenceContext private EntityManager entityManager;
 
   @Override
-  public List<CardEntity> findCardsByProvidedFilters(AggregateGetQueryParams params, User loggedInUser)
-          throws BadDateFormatException{
+  public List<CardEntity> findCardsByProvidedFilters(
+      AggregateGetQueryParams params, User loggedInUser) throws BadDateFormatException {
     // Create the CriteriaBuilder, CriteriaQuery and Root<> instances.
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<CardEntity> criteriaQuery = criteriaBuilder.createQuery(CardEntity.class);
     Root<CardEntity> cardRoot = criteriaQuery.from(CardEntity.class);
-    
+
     // Set the predicates the conjunction of which will make up the WHERE clause.
     List<Predicate> predicates;
     try {
-        predicates = extractPredicatesFromFilterParams(params.getFilterParams(), criteriaBuilder, cardRoot, loggedInUser);
-    } catch(ParseException pe){
+      predicates =
+          extractPredicatesFromFilterParams(
+              params.getFilterParams(), criteriaBuilder, cardRoot, loggedInUser);
+    } catch (ParseException pe) {
       throw new BadDateFormatException(pe.getMessage());
     }
     criteriaQuery.where(predicates.toArray(new Predicate[0]));
-    
+
     // Sort the results by the desired field in the desired order.
     criteriaQuery.orderBy(
         params.getSortOrder() == SortOrder.ASC
             ? criteriaBuilder.asc(cardRoot.get(params.getSortByField()))
-            : criteriaBuilder.desc(cardRoot.get(params.getSortByField()))); // We could also do second, third, ... n - level sorts.
-  
-    // Return a paginated form of the results. TODO: could we cache the previous or next page to speed things up?
+            : criteriaBuilder.desc(
+                cardRoot.get(
+                    params
+                        .getSortByField()))); // We could also do second, third, ... n - level
+                                              // sorts.
+
+    // Return a paginated form of the results. TODO: could we cache the previous or next page to
+    // speed things up?
     return entityManager
         .createQuery(criteriaQuery)
         .setMaxResults(params.getPageSize())
@@ -69,7 +76,8 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
   // predicates.
   // TODO: improve the following using the Specification interface.
   private List<Predicate> extractPredicatesFromFilterParams(
-      Map<String, String> params, CriteriaBuilder cb, Root<CardEntity> root, User user) throws ParseException {
+      Map<String, String> params, CriteriaBuilder cb, Root<CardEntity> root, User user)
+      throws ParseException {
     // Have to be careful to use the exact names of the fields in CardDto.
     List<Predicate> retVal = Lists.newArrayList();
     if (params.containsKey(NAME_FILTER_STRING)) {
@@ -86,20 +94,22 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
       retVal.add(
           cb.greaterThanOrEqualTo(
               root.get("createdDateTime"),
-                  LocalDateTime.parse(params.get(BEGIN_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)));
+              LocalDateTime.parse(
+                  params.get(BEGIN_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)));
     }
     if (params.containsKey(END_CREATION_DATE_FILTER_STRING)) {
       retVal.add(
           cb.lessThanOrEqualTo(
               root.get("createdDateTime"),
-                  LocalDateTime.parse(params.get(END_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)));
+              LocalDateTime.parse(
+                  params.get(END_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)));
     }
     if (params.containsKey(CREATING_USER_FILTER_STRING)) {
       retVal.add(cb.equal(root.get("createdBy"), params.get(CREATING_USER_FILTER_STRING)));
     }
-    // Don't forget that if the user isn't an admin, we can only allow them access 
+    // Don't forget that if the user isn't an admin, we can only allow them access
     // to cards they themselves have created.
-    if(!accessCheckService.userIsAdmin(user)){
+    if (!accessCheckService.userIsAdmin(user)) {
       retVal.add(cb.equal(root.get("createdBy"), user.getUsername()));
     }
     return retVal;

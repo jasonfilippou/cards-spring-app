@@ -20,7 +20,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Various utilities for generating and parsing JWTs.
- * @author jason 
+ *
+ * @author jason
  * @see JwtAuthenticationController
  * @see JwtAuthenticationService
  */
@@ -33,6 +34,7 @@ public class JwtTokenUtil implements Serializable {
 
   /**
    * Retrieve the user's username from the provided token.
+   *
    * @param token The JWT to retrieve the username from.
    * @return The user's username.
    */
@@ -42,6 +44,7 @@ public class JwtTokenUtil implements Serializable {
 
   /**
    * Retrieve the expiration date of the token.
+   *
    * @param token The token to retrieve the expiration date from.
    * @return A {@link Date} instance representing the moment in time that the token will expire.
    */
@@ -64,7 +67,9 @@ public class JwtTokenUtil implements Serializable {
     return expiration.before(new Date());
   }
 
-  /** Generate the token for the provided user.
+  /**
+   * Generate the token for the provided user.
+   *
    * @param userDetails The {@link UserDetails} of the provided user.
    * @return The generated JWT.
    * @see JwtUserDetailsService
@@ -93,7 +98,8 @@ public class JwtTokenUtil implements Serializable {
 
   /**
    * Validate the provided token against the details of the provided user.
-    * @param token A JWT.
+   *
+   * @param token A JWT.
    * @param userDetails The {@link UserDetails} to validate the token against.
    * @return {@literal true} if the token is validated, {@literal false} otherwise.
    */

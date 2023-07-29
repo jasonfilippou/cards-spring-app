@@ -11,7 +11,6 @@ import lombok.ToString;
  * Simple POJO that defines the API's response to the user for a JWT token request.
  *
  * @author jason
- *
  * @see JwtRequest
  */
 @RequiredArgsConstructor

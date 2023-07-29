@@ -6,5 +6,7 @@ package com.logicea.cardsapp.model.card;
  * @author jason
  */
 public enum CardStatus {
-    TODO, IN_PROGRESS, DONE
+  TODO,
+  IN_PROGRESS,
+  DONE
 }

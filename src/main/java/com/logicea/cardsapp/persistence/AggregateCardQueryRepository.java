@@ -6,5 +6,5 @@ import java.util.List;
 import org.springframework.security.core.userdetails.User;
 
 public interface AggregateCardQueryRepository {
-    List<CardEntity> findCardsByProvidedFilters(AggregateGetQueryParams params, User loggedInUser);
+  List<CardEntity> findCardsByProvidedFilters(AggregateGetQueryParams params, User loggedInUser);
 }

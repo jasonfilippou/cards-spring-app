@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Defines a Spring Bean of type {@link PasswordEncoder} for the various components to use.
+ *
  * @author jason
  * @see SecurityConfig
  */
@@ -15,6 +16,7 @@ public class PasswordEncoderConfig {
 
   /**
    * Define a Spring Bean of type {@link PasswordEncoder} for the various components to use.
+   *
    * @return An instance of type {@link PasswordEncoder}.
    */
   @Bean

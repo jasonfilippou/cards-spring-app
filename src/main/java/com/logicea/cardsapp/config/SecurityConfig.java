@@ -1,7 +1,7 @@
 package com.logicea.cardsapp.config;
 
-import com.logicea.cardsapp.util.JwtRequestFilter;
 import com.logicea.cardsapp.service.jwtauthentication.JwtUserDetailsService;
+import com.logicea.cardsapp.util.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,16 +39,15 @@ public class SecurityConfig {
    * Define {@link AuthenticationManager bean}.
    *
    * @param httpSecurity A {@link HttpSecurity} instance.
-   * @return A {@link AuthenticationManager} instance that knows which service to call for obtaining {@link UserDetails}
-   * and is aware of the password encryption scheme.
-   * @throws Exception If the {@link AuthenticationManagerBuilder} used underneath throws it while setting the {@link UserDetailsService}
-   * to use.
+   * @return A {@link AuthenticationManager} instance that knows which service to call for obtaining
+   *     {@link UserDetails} and is aware of the password encryption scheme.
+   * @throws Exception If the {@link AuthenticationManagerBuilder} used underneath throws it while
+   *     setting the {@link UserDetailsService} to use.
    * @see UserDetailsService
    * @see JwtUserDetailsService
    */
   @Bean
-  public AuthenticationManager authenticationManager(
-      HttpSecurity httpSecurity) throws Exception {
+  public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
     AuthenticationManagerBuilder authenticationManagerBuilder =
         httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
     authenticationManagerBuilder
@@ -77,8 +76,13 @@ public class SecurityConfig {
         .requestMatchers(
             "/cardsapi/register",
             "/cardsapi/authenticate",
-                "/swagger-ui-custom.html" ,"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**",
-                "/swagger-ui/index.html","/api-docs/**")
+            "/swagger-ui-custom.html",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/webjars/**",
+            "/swagger-ui/index.html",
+            "/api-docs/**")
         .permitAll()
         .anyRequest()
         .authenticated()

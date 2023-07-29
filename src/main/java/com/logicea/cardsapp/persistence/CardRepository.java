@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @LoggedRepository
 @Repository
-public interface CardRepository extends JpaRepository<CardEntity, Long>, AggregateCardQueryRepository {
-
-}
+public interface CardRepository
+    extends JpaRepository<CardEntity, Long>, AggregateCardQueryRepository {}

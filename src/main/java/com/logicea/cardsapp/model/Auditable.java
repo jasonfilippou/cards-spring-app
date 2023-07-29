@@ -24,27 +24,27 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Setter
 public abstract class Auditable<U extends String> {
 
-    @Column(name = "created_by", updatable = false, nullable = false)
-    @Email
-    @Size(min = 5, max = 50)
-    @CreatedBy
-    protected U createdBy;
+  @Column(name = "created_by", updatable = false, nullable = false)
+  @Email
+  @Size(min = 5, max = 50)
+  @CreatedBy
+  protected U createdBy;
 
-    @Column(name = "created_date_time", updatable = false, nullable = false)
-    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @CreatedDate
-    protected LocalDateTime createdDateTime;
+  @Column(name = "created_date_time", updatable = false, nullable = false)
+  @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @CreatedDate
+  protected LocalDateTime createdDateTime;
 
-    @Column(name = "last_modified_by")
-    @LastModifiedBy
-    @Email
-    @Size(min = 5, max = 50)
-    protected U lastModifiedBy;
+  @Column(name = "last_modified_by")
+  @LastModifiedBy
+  @Email
+  @Size(min = 5, max = 50)
+  protected U lastModifiedBy;
 
-    @Column(name = "last_modified_date_time")
-    @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
-    @LastModifiedDate
-    protected LocalDateTime lastModifiedDateTime;
+  @Column(name = "last_modified_date_time")
+  @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @JsonFormat(pattern = GLOBAL_DATE_TIME_PATTERN)
+  @LastModifiedDate
+  protected LocalDateTime lastModifiedDateTime;
 }

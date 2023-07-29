@@ -5,7 +5,6 @@ import static com.logicea.cardsapp.util.Constants.AUTH_HEADER_BEARER_PREFIX;
 import com.logicea.cardsapp.config.JwtAuthenticationEntryPoint;
 import com.logicea.cardsapp.service.jwtauthentication.JwtAuthenticationService;
 import com.logicea.cardsapp.service.jwtauthentication.JwtUserDetailsService;
-import com.logicea.cardsapp.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,9 +21,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * A {@link OncePerRequestFilter} that filters every incoming request to make sure that it is properly authenticated with an unexpired
- * JWT token.
- * @author jason 
+ * A {@link OncePerRequestFilter} that filters every incoming request to make sure that it is
+ * properly authenticated with an unexpired JWT token.
+ *
+ * @author jason
  * @see JwtTokenUtil
  * @see JwtAuthenticationService
  * @see JwtAuthenticationEntryPoint
@@ -37,7 +37,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-          HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+      HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain)
       throws ServletException, IOException {
     // Get the token
     final String requestTokenHeader = request.getHeader("Authorization");

@@ -10,8 +10,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 /**
- * Defines the default API response for unauthenticated calls to any endpoint. The response is {@link HttpServletResponse#SC_UNAUTHORIZED}}
- * and the message &quot;Unauthorized&quot;
+ * Defines the default API response for unauthenticated calls to any endpoint. The response is
+ * {@link HttpServletResponse#SC_UNAUTHORIZED}} and the message &quot;Unauthorized&quot;
+ *
  * @author jason
  * @see AuthenticationEntryPoint
  */
