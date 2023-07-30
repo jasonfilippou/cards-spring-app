@@ -1,4 +1,4 @@
-package com.logicea.cardsapp.unit.jwtauthentication;
+package com.logicea.cardsapp.unit.service.jwtauthentication;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;

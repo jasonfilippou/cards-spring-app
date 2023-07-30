@@ -1,4 +1,4 @@
-package com.logicea.cardsapp.unit.jwtauthentication;
+package com.logicea.cardsapp.unit.service.jwtauthentication;
 
 import static com.logicea.cardsapp.util.Constants.ADMIN_AUTHORITY;
 import static com.logicea.cardsapp.util.Constants.MEMBER_AUTHORITY;
