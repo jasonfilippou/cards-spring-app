@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.commons.lang3.RandomStringUtils;
 
 public final class TestUtils {
 
@@ -27,13 +26,9 @@ public final class TestUtils {
   public static final String ADMIN = "ADMIN";
   public static final String MEMBER = "MEMBER";
 
-  // We will give our DTOs IDs because it will make some tests easier to write.
+  // We will give our DTOs IDs and creation dates because it will make some tests easier to write.
   private static Long currentCardId = 0L;
-
-  public static String randomColorHex() {
-    return "#" + RandomStringUtils.randomAlphanumeric(6);
-  }
-
+  
   // Get 5 DTOs of status IN_PROGRESS.
 
   public static final CardStatus STATUS = CardStatus.IN_PROGRESS;
@@ -50,6 +45,7 @@ public final class TestUtils {
                         .description("Description of card: " + currentCardId)
                         .color("#45F281")
                         .status(STATUS)
+                        .createdDateTime(LocalDateTime.now().minusDays(2L))
                         .build()));
     return retVal;
   }
@@ -70,6 +66,7 @@ public final class TestUtils {
                         .description("Description of card: " + currentCardId)
                         .color("#4F141B")
                         .status(CardStatus.TODO)
+                        .createdDateTime(LocalDateTime.now().minusDays(2L))
                         .build()));
     return retVal;
   }
@@ -82,33 +79,33 @@ public final class TestUtils {
     List<CardDto> retVal = Lists.newArrayListWithCapacity(n);
     IntStream.range(0, n)
         .forEach(
-            _i ->
+            i ->
+                retVal.add(
+                    CardDto.builder()
+                        .id(++currentCardId)
+                        .name((i < n / 3) ? "CARD #" + currentCardId : NAME) // To add some variability in the queries.
+                        .description("Description of card: " + currentCardId)
+                        .color(COLOR)
+                        .status(CardStatus.DONE)
+                        .createdDateTime(LocalDateTime.now().minusDays(2L))
+                        .build()));
+    return retVal;
+  }
+  // Get n DTOs that were created in a decreasing number of minutes before now().
+  
+  public static List<CardDto> getNDtosOfDescriptionDesc(int n) {
+    List<CardDto> retVal = Lists.newArrayListWithCapacity(n);
+    IntStream.range(0, n)
+        .forEach(
+            i ->
                 retVal.add(
                     CardDto.builder()
                         .id(++currentCardId)
                         .name("CARD #" + currentCardId)
                         .description("Description of card: " + currentCardId)
-                        .color(COLOR)
-                        .status(CardStatus.DONE)
-                        .build()));
-    return retVal;
-  }
-  // Get n DTOs of description "desc"
-
-  public static final String DESCRIPTION = "desc";
-
-  public static List<CardDto> getNDtosOfDescriptionDesc(int n) {
-    List<CardDto> retVal = Lists.newArrayListWithCapacity(n);
-    IntStream.range(0, n)
-        .forEach(
-            _i ->
-                retVal.add(
-                    CardDto.builder()
-                        .id(++currentCardId)
-                        .name("CARD #" + currentCardId)
-                        .description(DESCRIPTION)
-                        .color(COLOR)
-                        .status(CardStatus.DONE)
+                        .color("#4F123O")
+                        .status((i < n / 2) ? CardStatus.DONE : STATUS) // To add some variability in the queries.
+                        .createdDateTime(LocalDateTime.now().minusMinutes(n - i))
                         .build()));
     return retVal;
   }
@@ -132,10 +129,9 @@ public final class TestUtils {
             .status(cardDto.getStatus())
             .color(cardDto.getColor())
             .build();
-    // And now let's create some standard audit fields
-    retVal.setCreatedDateTime(LocalDateTime.now().minusDays(2L));
+    retVal.setCreatedDateTime(cardDto.getCreatedDateTime());
     retVal.setCreatedBy(MEMBER);
-    retVal.setLastModifiedDateTime(LocalDateTime.now().minusDays(1L));
+    retVal.setLastModifiedDateTime(LocalDateTime.now());
     retVal.setLastModifiedBy(ADMIN);
     return retVal;
   }
