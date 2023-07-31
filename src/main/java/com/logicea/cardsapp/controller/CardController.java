@@ -90,6 +90,13 @@ public class CardController {
     return ResponseEntity.ok(assembler.toModel(cardService.replaceCard(id, cardDto)));
   }
 
+  @PatchMapping("/card/{id}")
+  public ResponseEntity<EntityModel<CardDto>> patchCard(
+      @PathVariable Long id, @RequestBody @Valid CardDto cardDto) {
+    return ResponseEntity.ok(assembler.toModel(cardService.updateCard(id, cardDto)));
+
+  }
+
   @DeleteMapping("/card/{id}")
   public ResponseEntity<?> deleteCard(@PathVariable Long id) {
     cardService.deleteCard(id);

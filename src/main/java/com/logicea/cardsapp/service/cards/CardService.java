@@ -28,7 +28,7 @@ public class CardService {
 
   private final CardRepository cardRepository;
   private final AccessCheckService accessCheckService;
-
+  private final PatchMapper patchMapper;
   @Transactional(readOnly = true)
   public CardDto getCard(Long id) throws CardNotFoundException, InsufficientPrivilegesException {
     Optional<CardEntity> card = cardRepository.findById(id);
@@ -74,6 +74,36 @@ public class CardService {
     newCard.setCreatedDateTime(createdDateTime);
     newCard.setCreatedBy(createdBy);
     return fromCardEntityToCardDto(newCard);
+  }
+  
+  @Transactional
+  public CardDto updateCard(Long id, CardDto cardDto){
+    Optional<CardEntity> cardOptional = cardRepository.findById(id);
+    if(cardOptional.isEmpty()){
+      throw new CardNotFoundException(id);
+    }
+    User loggedInUser =
+            (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (!accessCheckService.userHasAccessToCard(loggedInUser, cardOptional.get())) {
+      throw new InsufficientPrivilegesException(loggedInUser.getUsername());
+    }
+    CardEntity cardEntity = cardOptional.get();
+    LocalDateTime createdDateTime = cardEntity.getCreatedDateTime();
+    String createdBy = cardEntity.getCreatedBy();
+    patchMapper.updateEntityFromDto(cardDto, cardEntity);
+    CardEntity patchedCard = cardRepository.save(CardEntity.builder()
+            .id(cardEntity.getId())
+            .name(cardEntity.getName())
+            .description(cardEntity.getDescription())
+            .color(cardEntity.getColor())
+            .status(cardEntity.getStatus())
+            .build());
+    // Maintain proper audit fields
+    patchedCard.setCreatedDateTime(createdDateTime);
+    patchedCard.setCreatedBy(createdBy);
+    patchedCard.setLastModifiedDateTime(LocalDateTime.now());
+    patchedCard.setLastModifiedBy(loggedInUser.getUsername());
+    return fromCardEntityToCardDto(patchedCard);
   }
 
   @Transactional

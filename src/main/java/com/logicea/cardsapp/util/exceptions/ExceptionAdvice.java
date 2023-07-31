@@ -1,5 +1,6 @@
 package com.logicea.cardsapp.util.exceptions;
 
+import org.hibernate.HibernateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -27,7 +28,8 @@ public class ExceptionAdvice {
     MethodArgumentNotValidException.class,
     InvalidSortByFieldException.class,
     MethodArgumentTypeMismatchException.class,
-    BadDateFormatException.class
+    BadDateFormatException.class,
+    HibernateException.class
   })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<ExceptionMessageContainer> badRequestStatusMessage(Exception exc) {
