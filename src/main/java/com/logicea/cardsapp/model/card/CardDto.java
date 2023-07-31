@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -25,9 +24,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class CardDto {
   @Schema(example = "1", hidden = true)
   private Long id;
-
-  @NonNull
-  @NotBlank
+  
   @Size(max = 50)
   private String name;
 

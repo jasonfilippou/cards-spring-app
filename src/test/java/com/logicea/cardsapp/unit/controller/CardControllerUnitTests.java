@@ -11,6 +11,8 @@ import com.logicea.cardsapp.model.card.CardModelAssembler;
 import com.logicea.cardsapp.service.cards.CardService;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.SortOrder;
+import com.logicea.cardsapp.util.exceptions.CardNameCannotBeBlankException;
+import com.logicea.cardsapp.util.exceptions.CardNameNotProvidedException;
 import com.logicea.cardsapp.util.exceptions.InvalidSortByFieldException;
 import java.util.Collections;
 import org.junit.Before;
@@ -60,6 +62,11 @@ public class CardControllerUnitTests {
         assertEquals(new ResponseEntity<>(cardModelAssembler.toModel(STANDARD_DTO), HttpStatus.CREATED),
                 cardController.postCard(STANDARD_DTO));
     }
+    
+    @Test(expected = CardNameNotProvidedException.class)
+    public void whenUserDoesNotProvideANameForCard_thenCardNameNotProvidedExceptionisThrown(){
+        cardController.postCard(CardDto.builder().color("#9kL042").build());
+    }
 
     /* GET ALL tests */
 
@@ -84,12 +91,22 @@ public class CardControllerUnitTests {
                 cardController.putCard(STANDARD_DTO.getId(), STANDARD_DTO));
     }
     
+    @Test(expected = CardNameNotProvidedException.class)
+    public void whenAttemptingToReplaceACardWithANamelessCard_thenCardNameNotProvidedExceptionIsThrown(){
+        cardController.putCard(1L, CardDto.builder().description("desc").color("#45HJLP").build());
+    }
+    
     /* PATCH tests */
     @Test
     public void whenServiceSuccessfullyUpdatesCardWithDto_thenResponseEntityContainsFormattedDto(){
         when(cardService.updateCard(STANDARD_DTO.getId(), STANDARD_DTO)).thenReturn(STANDARD_DTO);
         assertEquals(ResponseEntity.ok(cardModelAssembler.toModel(STANDARD_DTO)),
                 cardController.patchCard(STANDARD_DTO.getId(), STANDARD_DTO));
+    }
+    
+    @Test(expected = CardNameCannotBeBlankException.class)
+    public void whenAttemptingToClearTheNameOfACard_thenCardNameCannotBeBlankExceptionIsThrown(){
+        cardController.patchCard(1L, CardDto.builder().name("     ").description("desc").build());
     }
     
     /* DELETE tests */

@@ -29,7 +29,9 @@ public class ExceptionAdvice {
     InvalidSortByFieldException.class,
     MethodArgumentTypeMismatchException.class,
     BadDateFormatException.class,
-    HibernateException.class
+    HibernateException.class,
+    CardNameNotProvidedException.class,
+    CardNameCannotBeBlankException.class
   })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseEntity<ExceptionMessageContainer> badRequestStatusMessage(Exception exc) {

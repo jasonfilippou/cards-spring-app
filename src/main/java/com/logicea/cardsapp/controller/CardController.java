@@ -7,6 +7,8 @@ import com.logicea.cardsapp.model.card.CardModelAssembler;
 import com.logicea.cardsapp.service.cards.CardService;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.SortOrder;
+import com.logicea.cardsapp.util.exceptions.CardNameCannotBeBlankException;
+import com.logicea.cardsapp.util.exceptions.CardNameNotProvidedException;
 import com.logicea.cardsapp.util.exceptions.InvalidSortByFieldException;
 import com.logicea.cardsapp.util.logger.Logged;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -48,8 +51,11 @@ public class CardController {
 
   @PostMapping("/card")
   public ResponseEntity<EntityModel<CardDto>> postCard(@RequestBody @Valid CardDto cardDto) {
-    return new ResponseEntity<>(
-        assembler.toModel(cardService.storeCard(cardDto)), HttpStatus.CREATED);
+    if (StringUtils.isBlank(cardDto.getName())){
+      throw new CardNameNotProvidedException();
+    }
+      return new ResponseEntity<>(
+                assembler.toModel(cardService.storeCard(cardDto)), HttpStatus.CREATED);
   }
 
   @GetMapping("/card/{id}")
@@ -87,14 +93,20 @@ public class CardController {
   @PutMapping("/card/{id}")
   public ResponseEntity<EntityModel<CardDto>> putCard(
       @PathVariable Long id, @RequestBody @Valid CardDto cardDto) {
+    if(StringUtils.isBlank(cardDto.getName())){
+      throw new CardNameNotProvidedException();
+    }
     return ResponseEntity.ok(assembler.toModel(cardService.replaceCard(id, cardDto)));
   }
 
   @PatchMapping("/card/{id}")
   public ResponseEntity<EntityModel<CardDto>> patchCard(
       @PathVariable Long id, @RequestBody @Valid CardDto cardDto) {
+    // We don't allow clearing the name of a card.
+    if(StringUtils.isWhitespace(cardDto.getName())){ // StringUtils.isWhitespace(null) returns false, which is good.
+      throw new CardNameCannotBeBlankException();
+    }
     return ResponseEntity.ok(assembler.toModel(cardService.updateCard(id, cardDto)));
-
   }
 
   @DeleteMapping("/card/{id}")
