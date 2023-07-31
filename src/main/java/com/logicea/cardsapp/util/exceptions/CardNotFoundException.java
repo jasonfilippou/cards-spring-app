@@ -9,10 +9,10 @@ import lombok.Getter;
 @Getter
 public class CardNotFoundException extends RuntimeException {
 
-    private final Long accountId;
+    private final Long cardId;
 
-    public CardNotFoundException(Long accountId) {
-        super("Could not find card with id: " + accountId + ".");
-        this.accountId = accountId;
+    public CardNotFoundException(Long cardId) {
+        super("Could not find card with id: " + cardId + ".");
+        this.cardId = cardId;
     }
 }

@@ -558,7 +558,6 @@ public class CardServiceUnitTests {
   
   /* PUT tests */
 
-
   /* PATCH tests */
 
   // TODO
