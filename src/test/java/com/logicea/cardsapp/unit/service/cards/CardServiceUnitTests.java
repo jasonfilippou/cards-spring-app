@@ -21,6 +21,7 @@ import com.logicea.cardsapp.util.exceptions.CardNotFoundException;
 import com.logicea.cardsapp.util.exceptions.InsufficientPrivilegesException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -124,55 +125,54 @@ public class CardServiceUnitTests {
 
     // First, test a page with 20 cards.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(20)
         .pojoType(CardDto.class)
-        .filterParams(Collections.emptyMap())
-        .expectedPageSizes(List.of(20))
+        .expectedPageSizes(Collections.singletonList(20))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 2 pages of 10 cards each.
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(10)
         .pojoType(CardDto.class)
-        .filterParams(Collections.emptyMap())
         .expectedPageSizes(List.of(10, 10))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Third, test 4 pages of 5 cards each.
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(4)
         .pageSize(5)
         .pojoType(CardDto.class)
-        .filterParams(Collections.emptyMap())
         .expectedPageSizes(List.of(5, 5, 5, 5))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Fourth and final, test 7 pages with 3, 3, 3, 3, 3, 3 and 2 cards respectively.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(7)
         .pageSize(3)
         .pojoType(CardDto.class)
-        .filterParams(Collections.emptyMap())
         .expectedPageSizes(List.of(3, 3, 3, 3, 3, 3, 2))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
   }
 
-  private void testPaginatedAndSortedAggregateGetWithoutFilters(
+  @SuppressWarnings("unchecked")
+  private void testPaginatedAndSortedAggregateGet(
       AggregateGetQueryParams params, int expectedNumEntries) {
     Integer page = params.getPage();
     Integer pageSize = params.getPageSize();
     String sortByField = params.getSortByField();
     SortOrder sortOrder = params.getSortOrder();
+    Predicate<CardEntity> filter = Optional.ofNullable((Predicate<CardEntity>) params.getPredicate()).orElse(cardEntity -> true);
     List<CardEntity> sortedList =
         CARD_ENTITIES.stream()
+            .filter(filter)
             .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
             .toList();
     List<CardEntity> slicedList =
@@ -205,58 +205,36 @@ public class CardServiceUnitTests {
 
     // First, test a page with 9 cards.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(9)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(NAME_FILTER_STRING, NAME))
+        .filteringPredicate(cardEntity->cardEntity.getName().equals(NAME))
         .expectedPageSizes(List.of(9))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithNameFilter);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 3 pages with 3 cards each.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(3)
         .pageSize(3)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(NAME_FILTER_STRING, NAME))
+        .filteringPredicate(cardEntity->cardEntity.getName().equals(NAME))
         .expectedPageSizes(List.of(3, 3, 3))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithNameFilter);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Third and final, test 3 pages, with 4 + 4 + 1 cards each, respectively.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(3)
         .pageSize(4)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(NAME_FILTER_STRING, NAME))
+        .filteringPredicate(cardEntity->cardEntity.getName().equals(NAME))
         .expectedPageSizes(List.of(4, 4, 1))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithNameFilter);
-  }
-
-  private void testPaginatedAndSortedAggregateGetWithNameFilter(
-      AggregateGetQueryParams params, int expectedNumEntries) {
-    Integer page = params.getPage();
-    Integer pageSize = params.getPageSize();
-    String sortByField = params.getSortByField();
-    SortOrder sortOrder = params.getSortOrder();
-    Map<String, String> filters = params.getFilterParams();
-    assert filters.containsKey(NAME_FILTER_STRING);
-    List<CardEntity> filteredAndSortedList =
-        CARD_ENTITIES.stream()
-            .filter(cardEntity -> cardEntity.getName().equals(filters.get(NAME_FILTER_STRING)))
-            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
-            .toList();
-    List<CardEntity> slicedList =
-        filteredAndSortedList.subList(
-                page * pageSize,
-            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
-    mockWithExpectedList(params, slicedList);
-    makePaginationAndSortingQueryAssertions(
-        cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
   }
 
   @Test
@@ -267,58 +245,36 @@ public class CardServiceUnitTests {
 
     // First, test a page with 5 cards.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(5)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(COLOR_FILTER_STRING, COLOR))
+        .filteringPredicate(cardEntity -> cardEntity.getColor().equals(COLOR))
         .expectedPageSizes(Collections.singletonList(5))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithColorFilter);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 2 pages, one with 3 and another one with 2 cards.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(3)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(COLOR_FILTER_STRING, COLOR))
+        .filteringPredicate(cardEntity -> cardEntity.getColor().equals(COLOR))
         .expectedPageSizes(List.of(3, 2))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithColorFilter);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Third and final, test 3 pages, with 2 + 2 + 1 cards each, respectively.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(3)
         .pageSize(2)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(COLOR_FILTER_STRING, COLOR))
+        .filteringPredicate(cardEntity -> cardEntity.getColor().equals(COLOR))
         .expectedPageSizes(List.of(2, 2, 1))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithColorFilter);
-  }
-
-  private void testPaginatedAndSortedAggregateGetWithColorFilter(
-      AggregateGetQueryParams params, int expectedNumEntries) {
-    Integer page = params.getPage();
-    Integer pageSize = params.getPageSize();
-    String sortByField = params.getSortByField();
-    SortOrder sortOrder = params.getSortOrder();
-    Map<String, String> filters = params.getFilterParams();
-    assert filters.containsKey(COLOR_FILTER_STRING);
-    List<CardEntity> filteredAndSortedList =
-        CARD_ENTITIES.stream()
-            .filter(cardEntity -> cardEntity.getColor().equals(filters.get(COLOR_FILTER_STRING)))
-            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
-            .toList();
-    List<CardEntity> slicedList =
-        filteredAndSortedList.subList(
-                page * pageSize,
-            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
-    mockWithExpectedList(params, slicedList);
-    makePaginationAndSortingQueryAssertions(
-        cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
   }
 
   @Test
@@ -329,49 +285,25 @@ public class CardServiceUnitTests {
 
     // First, test a page with 8 cards.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(8)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(STATUS_FILTER_STRING, STATUS.toString()))
+        .filteringPredicate(cardEntity -> cardEntity.getStatus().equals(STATUS))
         .expectedPageSizes(Collections.singletonList(8))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithStatusFilter);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 2 pages, one with 5 and another one with 3 cards.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(5)
         .pojoType(CardDto.class)
-        .filterParams(Map.of(STATUS_FILTER_STRING, STATUS.toString()))
+        .filteringPredicate(cardEntity -> cardEntity.getStatus().equals(STATUS))
         .expectedPageSizes(List.of(5, 3))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithStatusFilter);
-  }
-
-  private void testPaginatedAndSortedAggregateGetWithStatusFilter(
-      AggregateGetQueryParams params, int expectedNumEntries) {
-    Integer page = params.getPage();
-    Integer pageSize = params.getPageSize();
-    String sortByField = params.getSortByField();
-    SortOrder sortOrder = params.getSortOrder();
-    Map<String, String> filters = params.getFilterParams();
-    assert filters.containsKey(STATUS_FILTER_STRING);
-    List<CardEntity> filteredAndSortedList =
-        CARD_ENTITIES.stream()
-            .filter(
-                cardEntity ->
-                    cardEntity.getStatus().toString().equals(filters.get(STATUS_FILTER_STRING)))
-            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
-            .toList();
-    List<CardEntity> slicedList =
-        filteredAndSortedList.subList(
-                page * pageSize,
-            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
-    mockWithExpectedList(params, slicedList);
-    makePaginationAndSortingQueryAssertions(
-        cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
   }
 
   @Test
@@ -382,71 +314,29 @@ public class CardServiceUnitTests {
 
     // First, test a page with 5 cards.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(5)
         .pojoType(CardDto.class)
-        .filterParams(
-            Map.of(
-                BEGIN_CREATION_DATE_FILTER_STRING,
-                    LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                        .minusMinutes(5)
-                        .format(DATE_TIME_FORMATTER),
-                END_CREATION_DATE_FILTER_STRING,
-                    LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                        .format(DATE_TIME_FORMATTER)))
+        .filteringPredicate(cardEntity -> creationDateBetween(cardEntity.getCreatedDateTime(),
+                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                        .minusMinutes(5),  LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)))
         .expectedPageSizes(Collections.singletonList(5))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithCreationDateFilters);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 2 pages, one with 4 and another one with 1 card.
 
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(4)
         .pojoType(CardDto.class)
-        .filterParams(
-            Map.of(
-                BEGIN_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                    .minusMinutes(5)
-                    .format(DATE_TIME_FORMATTER),
-                END_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                    .format(DATE_TIME_FORMATTER)))
+        .filteringPredicate(cardEntity -> creationDateBetween(cardEntity.getCreatedDateTime(),
+                  LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                      .minusMinutes(5),  LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)))
         .expectedPageSizes(List.of(4, 1))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithCreationDateFilters);
-  }
-
-  private void testPaginatedAndSortedAggregateGetWithCreationDateFilters(
-      AggregateGetQueryParams params, int expectedNumEntries) {
-    Integer page = params.getPage();
-    Integer pageSize = params.getPageSize();
-    String sortByField = params.getSortByField();
-    SortOrder sortOrder = params.getSortOrder();
-    Map<String, String> filters = params.getFilterParams();
-    assert filters.containsKey(BEGIN_CREATION_DATE_FILTER_STRING)
-        && filters.containsKey(END_CREATION_DATE_FILTER_STRING);
-    List<CardEntity> filteredAndSortedList =
-        CARD_ENTITIES.stream()
-            .filter(
-                cardEntity ->
-                    creationDateBetween(
-                        cardEntity.getCreatedDateTime(),
-                        LocalDateTime.parse(
-                            filters.get(BEGIN_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER),
-                        LocalDateTime.parse(
-                            filters.get(END_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)))
-            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
-            .toList();
-    List<CardEntity> slicedList =
-        filteredAndSortedList.subList(
-                page * pageSize,
-            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
-    mockWithExpectedList(params, slicedList);
-    makePaginationAndSortingQueryAssertions(
-        cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
   }
 
   private boolean creationDateBetween(
@@ -467,80 +357,30 @@ public class CardServiceUnitTests {
     // There are 3 cards created within the last 5 minutes with a status of IN_PROGRESS.
 
     // First, test a page of all 3 cards.
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(3)
         .pojoType(CardDto.class)
-        .filterParams(
-            Map.of(
-                BEGIN_CREATION_DATE_FILTER_STRING,
+        .filteringPredicate(cardEntity -> creationDateBetween(cardEntity.getCreatedDateTime(), 
                 LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                    .minusMinutes(5)
-                    .format(DATE_TIME_FORMATTER),
-                END_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                    .format(DATE_TIME_FORMATTER),
-                    STATUS_FILTER_STRING,
-                    STATUS.toString()))
+                .minusMinutes(5), LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)) && 
+                cardEntity.getStatus().equals(STATUS))
         .expectedPageSizes(Collections.singletonList(3))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithStatusAndCreationDateFilters);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 2 pages, 1 with 2 and 1 with 1 card.
-    PaginationTester.builder()
+    PaginationTester.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(2)
         .pojoType(CardDto.class)
-        .filterParams(
-                Map.of(
-                        BEGIN_CREATION_DATE_FILTER_STRING,
-                        LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                                .minusMinutes(5)
-                                .format(DATE_TIME_FORMATTER),
-                        END_CREATION_DATE_FILTER_STRING,
-                        LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
-                                .format(DATE_TIME_FORMATTER),
-                        STATUS_FILTER_STRING,
-                        STATUS.toString()))
+            .filteringPredicate(cardEntity -> creationDateBetween(cardEntity.getCreatedDateTime(),
+                    LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                            .minusMinutes(5), LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)) &&
+                    cardEntity.getStatus().equals(STATUS))
         .expectedPageSizes(List.of(2, 1))
         .build()
-        .runTest(this::testPaginatedAndSortedAggregateGetWithStatusAndCreationDateFilters);
-  }
-
-  private void testPaginatedAndSortedAggregateGetWithStatusAndCreationDateFilters(
-      AggregateGetQueryParams params, int expectedNumEntries) {
-    Integer page = params.getPage();
-    Integer pageSize = params.getPageSize();
-    String sortByField = params.getSortByField();
-    SortOrder sortOrder = params.getSortOrder();
-    Map<String, String> filters = params.getFilterParams();
-    assert filters.containsKey(BEGIN_CREATION_DATE_FILTER_STRING)
-        && filters.containsKey(END_CREATION_DATE_FILTER_STRING)
-        && filters.containsKey(STATUS_FILTER_STRING);
-    List<CardEntity> filteredAndSortedList =
-        CARD_ENTITIES.stream()
-            .filter(
-                cardEntity ->
-                    creationDateBetween(
-                            cardEntity.getCreatedDateTime(),
-                            LocalDateTime.parse(
-                                filters.get(BEGIN_CREATION_DATE_FILTER_STRING),
-                                DATE_TIME_FORMATTER),
-                            LocalDateTime.parse(
-                                filters.get(END_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER))
-                        && cardEntity
-                            .getStatus()
-                            .toString()
-                            .equals(filters.get(STATUS_FILTER_STRING)))
-            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
-            .toList();
-    List<CardEntity> slicedList =
-        filteredAndSortedList.subList(
-                page * pageSize,
-                Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
-    mockWithExpectedList(params, slicedList);
-    makePaginationAndSortingQueryAssertions(
-        cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
+        .runTest(this::testPaginatedAndSortedAggregateGet);
   }
 
   @Test(expected = InsufficientPrivilegesException.class)
