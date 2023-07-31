@@ -1,12 +1,14 @@
 package com.logicea.cardsapp.service.cards;
 
 import static com.logicea.cardsapp.util.Constants.CREATING_USER_FILTER_STRING;
+import static com.logicea.cardsapp.util.Utilities.fromCardEntityToCardDto;
 
 import com.logicea.cardsapp.model.card.CardDto;
 import com.logicea.cardsapp.model.card.CardEntity;
 import com.logicea.cardsapp.model.card.CardStatus;
 import com.logicea.cardsapp.persistence.CardRepository;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
+import com.logicea.cardsapp.util.Utilities;
 import com.logicea.cardsapp.util.exceptions.CardNotFoundException;
 import com.logicea.cardsapp.util.exceptions.InsufficientPrivilegesException;
 import com.logicea.cardsapp.util.logger.Logged;
@@ -131,9 +133,17 @@ public class CardService {
       throw new InsufficientPrivilegesException(loggedInUser.getUsername());
     }
     return cardRepository.findCardsByProvidedFilters(params, loggedInUser).stream()
-        .map(this::fromCardEntityToCardDto)
+        .map(Utilities::fromCardEntityToCardDto)
         .collect(Collectors.toList());
   }
+
+  private boolean filterParamsIncludeOtherMemberCards(User user, Map<String, String> filterParams) {
+    if (!filterParams.containsKey(CREATING_USER_FILTER_STRING)) {
+      return false;
+    }
+    return !filterParams.get(CREATING_USER_FILTER_STRING).equals(user.getUsername());
+  }
+
 
   @Transactional
   public void deleteCard(Long id) throws CardNotFoundException, InsufficientPrivilegesException {
@@ -149,26 +159,5 @@ public class CardService {
     cardRepository.deleteById(id);
   }
 
-  private boolean filterParamsIncludeOtherMemberCards(User user, Map<String, String> filterParams) {
-    if (!filterParams.containsKey(CREATING_USER_FILTER_STRING)) {
-      return false;
-    }
-    return !filterParams.get(CREATING_USER_FILTER_STRING).equals(user.getUsername());
-  }
 
-  // The following could probably be optimized with MapStruct or
-  // BeanUtils/PropertyUtils.copyProperties().
-  private CardDto fromCardEntityToCardDto(CardEntity cardEntity) {
-    return CardDto.builder()
-        .id(cardEntity.getId())
-        .description(cardEntity.getDescription())
-        .name(cardEntity.getName())
-        .color(cardEntity.getColor())
-        .status(cardEntity.getStatus())
-        .createdDateTime(cardEntity.getCreatedDateTime())
-        .createdBy(cardEntity.getCreatedBy())
-        .lastModifiedBy(cardEntity.getLastModifiedBy())
-        .lastModifiedDateTime(cardEntity.getLastModifiedDateTime())
-        .build();
-  }
 }

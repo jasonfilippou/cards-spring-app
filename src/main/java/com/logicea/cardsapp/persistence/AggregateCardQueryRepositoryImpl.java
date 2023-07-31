@@ -17,7 +17,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +27,6 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {
 
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern(GLOBAL_DATE_TIME_PATTERN);
   private final AccessCheckService accessCheckService;
   @PersistenceContext private EntityManager entityManager;
 
