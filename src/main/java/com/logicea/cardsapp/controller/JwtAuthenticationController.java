@@ -56,7 +56,7 @@ public class JwtAuthenticationController {
         @ApiResponse(responseCode = "404", description = "Username not found.", content = @Content)
       })
   @PostMapping(value = "/authenticate")
-  public ResponseEntity<JwtResponse> createAuthenticationToken(
+  public ResponseEntity<JwtResponse> authenticate(
       @RequestBody @Valid JwtRequest authenticationRequest) {
 
     jwtAuthenticationService.authenticate(

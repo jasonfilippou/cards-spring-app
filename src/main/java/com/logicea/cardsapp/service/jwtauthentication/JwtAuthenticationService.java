@@ -28,7 +28,7 @@ public class JwtAuthenticationService {
    * @param password The user's password.
    * @throws DisabledException if the authentication manager determines that the user is disabled.
    * @throws BadCredentialsException if the password provided did not correspond to the username
-   *     provided.
+   *     provided or the username was not in the database.
    * @see AuthenticationManager
    * @see UsernamePasswordAuthenticationToken
    */

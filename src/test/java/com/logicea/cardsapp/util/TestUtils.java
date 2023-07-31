@@ -1,5 +1,7 @@
 package com.logicea.cardsapp.util;
 
+import static com.logicea.cardsapp.util.Constants.*;
+
 import com.google.common.collect.Comparators;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -7,32 +9,59 @@ import com.google.common.collect.Lists;
 import com.logicea.cardsapp.model.card.CardDto;
 import com.logicea.cardsapp.model.card.CardEntity;
 import com.logicea.cardsapp.model.card.CardStatus;
+import com.logicea.cardsapp.model.user.UserDto;
+import com.logicea.cardsapp.model.user.UserRole;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.logicea.cardsapp.util.Constants.DATE_TIME_FORMATTER;
+import lombok.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
 
 public final class TestUtils {
 
   private TestUtils() {}
+  public static final String ADMIN_EMAIL = "admin@company.com";
+  public static final String ADMIN_PASSWORD = "adminpassword";
+  public static final String MEMBER_ONE_EMAIL = "member1@company.com";
+  public static final String MEMBER_ONE_PASSWORD = "member1password";
 
-  public static final Random RANDOM = new Random(47);
-  public static final String ADMIN = "ADMIN";
-  public static final String MEMBER = "MEMBER";
+  public static final String MEMBER_TWO_EMAIL = "member2@company.com";
+  public static final String MEMBER_TWO_PASSWORD = "member2password";
+
+  public static final UserDto ADMIN_DTO = new UserDto(ADMIN_EMAIL, ADMIN_PASSWORD, UserRole.ADMIN);
+  public static final UserDto MEMBER_ONE_DTO = new UserDto(MEMBER_ONE_EMAIL, MEMBER_ONE_PASSWORD, UserRole.MEMBER);
+
+  public static final UserDto MEMBER_TWO_DTO = new UserDto(MEMBER_TWO_EMAIL, MEMBER_TWO_PASSWORD, UserRole.MEMBER);
+
+  public static final User ADMIN_USER =
+          new User(ADMIN_EMAIL, ADMIN_PASSWORD, Collections.singletonList(ADMIN_AUTHORITY));
+  public static final User MEMBER_ONE_USER =
+          new User(MEMBER_ONE_EMAIL, MEMBER_ONE_PASSWORD, Collections.singletonList(MEMBER_AUTHORITY));
+
+  public static final User MEMBER_TWO_USER =
+          new User(MEMBER_TWO_EMAIL, MEMBER_TWO_PASSWORD, Collections.singletonList(MEMBER_AUTHORITY));
+
+  public static final UsernamePasswordAuthenticationToken ADMIN_UPAT =
+          new UsernamePasswordAuthenticationToken(ADMIN_USER, null, ADMIN_USER.getAuthorities());
+  public static final UsernamePasswordAuthenticationToken MEMBER_ONE_UPAT =
+          new UsernamePasswordAuthenticationToken(MEMBER_ONE_USER, null, MEMBER_ONE_USER.getAuthorities());
+
+  public static final UsernamePasswordAuthenticationToken MEMBER_TWO_UPAT =
+          new UsernamePasswordAuthenticationToken(MEMBER_TWO_USER, null, MEMBER_TWO_USER.getAuthorities());
 
   // We will give our DTOs IDs and creation dates because it will make some tests easier to write.
   private static Long currentCardId = 0L;
   
-  // Get 5 DTOs of status IN_PROGRESS.
-
+  // Get n DTOs of status IN_PROGRESS.
   public static final CardStatus STATUS = CardStatus.IN_PROGRESS;
 
   public static List<CardDto> getNInProgressDtos(int n) {
@@ -95,7 +124,7 @@ public final class TestUtils {
   }
   // Get n DTOs that were created in a decreasing number of minutes before New Year's Eve 2023.
   
-  public static List<CardDto> getNDtosOfDescriptionDesc(int n) {
+  public static List<CardDto> getNDtosOfIncreasingCreatedTime(int n) {
     List<CardDto> retVal = Lists.newArrayListWithCapacity(n);
     IntStream.range(0, n)
         .forEach(
@@ -119,7 +148,7 @@ public final class TestUtils {
           Iterables.concat(
               getNInProgressDtos(5),
               getNDtosOfSpecificColor(5),
-              getNDtosOfDescriptionDesc(5),
+              getNDtosOfIncreasingCreatedTime(5),
               getNMemeCardNameDtos(5)));
 
   // Make a list of relevant entities.
@@ -133,9 +162,9 @@ public final class TestUtils {
             .color(cardDto.getColor())
             .build();
     retVal.setCreatedDateTime(cardDto.getCreatedDateTime());
-    retVal.setCreatedBy(MEMBER);
+    retVal.setCreatedBy(MEMBER_ONE_EMAIL);
     retVal.setLastModifiedDateTime(LocalDateTime.now());
-    retVal.setLastModifiedBy(ADMIN);
+    retVal.setLastModifiedBy(ADMIN_EMAIL);
     return retVal;
   }
 
@@ -172,5 +201,25 @@ public final class TestUtils {
       throw new RuntimeException(
           "Field " + sortByField + " of " + pojoOne.getClass().getSimpleName() + " is not Comparable.");
     }
+  }
+  
+  /* Other utilities */
+
+  // We will consider a CardDto to be "equal" to a CardEntity if the non-audit fields match.
+  public static boolean cardDtoAndEntityEqual(@NonNull CardDto cardDto, @NonNull CardEntity cardEntity) {
+    return Objects.equals(cardDto.getId(), cardEntity.getId())
+            && Objects.equals(cardDto.getStatus(), cardEntity.getStatus())
+            && Objects.equals(cardDto.getDescription(), cardEntity.getDescription())
+            && Objects.equals(cardDto.getColor(), cardEntity.getColor())
+            && Objects.equals(cardDto.getName(), cardEntity.getName());
+  }
+
+  // We will do the same for two CardDto instances.
+  public static boolean cardDtosEqual(@NonNull CardDto dtoOne, @NonNull CardDto dtoTwo) {
+    return Objects.equals(dtoOne.getId(), dtoTwo.getId())
+            && Objects.equals(dtoOne.getStatus(), dtoTwo.getStatus())
+            && Objects.equals(dtoOne.getDescription(), dtoTwo.getDescription())
+            && Objects.equals(dtoOne.getColor(), dtoTwo.getColor())
+            && Objects.equals(dtoOne.getName(), dtoTwo.getName());
   }
 }

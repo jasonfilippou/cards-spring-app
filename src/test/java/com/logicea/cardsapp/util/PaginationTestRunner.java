@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @Getter
 @RequiredArgsConstructor
-public class PaginationTester<T, U> {
+public class PaginationTestRunner<T, U> {
   @NonNull private final Integer totalPages;
   @NonNull private final Integer pageSize;
   @NonNull private final Class<T> pojoType;

@@ -15,7 +15,7 @@ import com.logicea.cardsapp.service.cards.AccessCheckService;
 import com.logicea.cardsapp.service.cards.CardService;
 import com.logicea.cardsapp.service.cards.PatchMapper;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
-import com.logicea.cardsapp.util.PaginationTester;
+import com.logicea.cardsapp.util.PaginationTestRunner;
 import com.logicea.cardsapp.util.SortOrder;
 import com.logicea.cardsapp.util.exceptions.CardNotFoundException;
 import com.logicea.cardsapp.util.exceptions.InsufficientPrivilegesException;
@@ -27,9 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CardServiceUnitTests {
@@ -42,20 +40,7 @@ public class CardServiceUnitTests {
   private PatchMapper patchMapper;
 
   @InjectMocks private CardService cardService;
-
-  public static final String ADMIN_EMAIL = "admin@company.com";
-  public static final String ADMIN_PASSWORD = "adminpassword";
-  public static final String MEMBER_EMAIL = "member@company.com";
-  public static final String MEMBER_PASSWORD = "memberpassword";
-  private static final User ADMIN_USER =
-      new User(ADMIN_EMAIL, ADMIN_PASSWORD, Collections.singletonList(ADMIN_AUTHORITY));
-  private static final User MEMBER_USER =
-      new User(MEMBER_EMAIL, MEMBER_PASSWORD, Collections.singletonList(MEMBER_AUTHORITY));
-
-  private static final UsernamePasswordAuthenticationToken ADMIN_UPAT =
-      new UsernamePasswordAuthenticationToken(ADMIN_USER, null, ADMIN_USER.getAuthorities());
-  private static final UsernamePasswordAuthenticationToken MEMBER_UPAT =
-      new UsernamePasswordAuthenticationToken(MEMBER_USER, null, MEMBER_USER.getAuthorities());
+  
   private static final CardDto CARD_DTO =
       CardDto.builder()
           .id(1L)
@@ -73,24 +58,6 @@ public class CardServiceUnitTests {
           .status(CARD_DTO.getStatus())
           .color(CARD_DTO.getColor())
           .build();
-
-  // We will consider a CardDto to be "equal" to a CardEntity if the non-audit fields match.
-  private static boolean cardDtoAndEntityEqual(CardDto cardDto, CardEntity cardEntity) {
-    return Objects.equals(cardDto.getId(), cardEntity.getId())
-        && Objects.equals(cardDto.getStatus(), cardEntity.getStatus())
-        && Objects.equals(cardDto.getDescription(), cardEntity.getDescription())
-        && Objects.equals(cardDto.getColor(), cardEntity.getColor())
-        && Objects.equals(cardDto.getName(), cardEntity.getName());
-  }
-
-  // We will do the same for two CardDto instances.
-  private static boolean cardDtosEqual(CardDto dtoOne, CardDto dtoTwo) {
-    return Objects.equals(dtoOne.getId(), dtoTwo.getId())
-        && Objects.equals(dtoOne.getStatus(), dtoTwo.getStatus())
-        && Objects.equals(dtoOne.getDescription(), dtoTwo.getDescription())
-        && Objects.equals(dtoOne.getColor(), dtoTwo.getColor())
-        && Objects.equals(dtoOne.getName(), dtoTwo.getName());
-  }
 
   /* GET by ID tests */
 
@@ -113,8 +80,8 @@ public class CardServiceUnitTests {
   public void
       whenUserHasInsufficientPrivilegesToGetCard_thenInsufficientPrivilegesExceptionIsThrown() {
     when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.of(CARD_ENTITY));
-    SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
-    when(accessCheckService.userHasAccessToCard(MEMBER_USER, CARD_ENTITY)).thenReturn(false);
+    SecurityContextHolder.getContext().setAuthentication(MEMBER_ONE_UPAT);
+    when(accessCheckService.userHasAccessToCard(MEMBER_ONE_USER, CARD_ENTITY)).thenReturn(false);
     cardService.getCard(CARD_DTO.getId());
   }
 
@@ -128,7 +95,7 @@ public class CardServiceUnitTests {
 
     // First, test a page with 20 cards.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(20)
         .pojoType(CardDto.class)
@@ -137,7 +104,7 @@ public class CardServiceUnitTests {
         .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 2 pages of 10 cards each.
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(10)
         .pojoType(CardDto.class)
@@ -146,7 +113,7 @@ public class CardServiceUnitTests {
         .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Third, test 4 pages of 5 cards each.
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(4)
         .pageSize(5)
         .pojoType(CardDto.class)
@@ -156,7 +123,7 @@ public class CardServiceUnitTests {
 
     // Fourth and final, test 7 pages with 3, 3, 3, 3, 3, 3 and 2 cards respectively.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(7)
         .pageSize(3)
         .pojoType(CardDto.class)
@@ -208,7 +175,7 @@ public class CardServiceUnitTests {
 
     // First, test a page with 9 cards.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(9)
         .pojoType(CardDto.class)
@@ -219,7 +186,7 @@ public class CardServiceUnitTests {
 
     // Second, test 3 pages with 3 cards each.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(3)
         .pageSize(3)
         .pojoType(CardDto.class)
@@ -230,7 +197,7 @@ public class CardServiceUnitTests {
 
     // Third and final, test 3 pages, with 4 + 4 + 1 cards each, respectively.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(3)
         .pageSize(4)
         .pojoType(CardDto.class)
@@ -248,7 +215,7 @@ public class CardServiceUnitTests {
 
     // First, test a page with 5 cards.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(5)
         .pojoType(CardDto.class)
@@ -259,7 +226,7 @@ public class CardServiceUnitTests {
 
     // Second, test 2 pages, one with 3 and another one with 2 cards.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(3)
         .pojoType(CardDto.class)
@@ -270,7 +237,7 @@ public class CardServiceUnitTests {
 
     // Third and final, test 3 pages, with 2 + 2 + 1 cards each, respectively.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(3)
         .pageSize(2)
         .pojoType(CardDto.class)
@@ -288,7 +255,7 @@ public class CardServiceUnitTests {
 
     // First, test a page with 8 cards.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(8)
         .pojoType(CardDto.class)
@@ -299,7 +266,7 @@ public class CardServiceUnitTests {
 
     // Second, test 2 pages, one with 5 and another one with 3 cards.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(5)
         .pojoType(CardDto.class)
@@ -317,7 +284,7 @@ public class CardServiceUnitTests {
 
     // First, test a page with 5 cards.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(5)
         .pojoType(CardDto.class)
@@ -330,7 +297,7 @@ public class CardServiceUnitTests {
 
     // Second, test 2 pages, one with 4 and another one with 1 card.
 
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(4)
         .pojoType(CardDto.class)
@@ -360,7 +327,7 @@ public class CardServiceUnitTests {
     // There are 3 cards created within the last 5 minutes with a status of IN_PROGRESS.
 
     // First, test a page of all 3 cards.
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(1)
         .pageSize(3)
         .pojoType(CardDto.class)
@@ -373,7 +340,7 @@ public class CardServiceUnitTests {
         .runTest(this::testPaginatedAndSortedAggregateGet);
 
     // Second, test 2 pages, 1 with 2 and 1 with 1 card.
-    PaginationTester.<CardDto, CardEntity>builder()
+    PaginationTestRunner.<CardDto, CardEntity>builder()
         .totalPages(2)
         .pageSize(2)
         .pojoType(CardDto.class)
@@ -389,13 +356,13 @@ public class CardServiceUnitTests {
   @Test(expected = InsufficientPrivilegesException.class)
   public void
       whenAttemptingToGetADifferentUsersCards_whileNotAdmin_thenInsufficientPrivilegesExceptionIsThrown() {
-    SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
+    SecurityContextHolder.getContext().setAuthentication(MEMBER_ONE_UPAT);
     AggregateGetQueryParams paramsWithOtherUsersEmail =
         AggregateGetQueryParams.builder()
             .filterParams(Map.of(CREATING_USER_FILTER_STRING, ADMIN_EMAIL))
             .build();
     // Mocking just for consistency, since this would return true anyhow.
-    when(accessCheckService.userIsMember(MEMBER_USER)).thenReturn(true);
+    when(accessCheckService.userIsMember(MEMBER_ONE_USER)).thenReturn(true);
     cardService.getAllCardsByFilter(paramsWithOtherUsersEmail);
   }
 
@@ -421,9 +388,9 @@ public class CardServiceUnitTests {
   @Test(expected = InsufficientPrivilegesException.class)
   public void
       whenRepoFindsTheCardById_andUserDoesNotHaveAccessToIt_thenInsufficientPrivilegesExceptionIsThrown() {
-    SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
+    SecurityContextHolder.getContext().setAuthentication(MEMBER_ONE_UPAT);
     when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.of(CARD_ENTITY));
-    when(accessCheckService.userHasAccessToCard(MEMBER_USER, CARD_ENTITY)).thenReturn(false);
+    when(accessCheckService.userHasAccessToCard(MEMBER_ONE_USER, CARD_ENTITY)).thenReturn(false);
     cardService.deleteCard(CARD_DTO.getId());
   }
 
@@ -456,7 +423,7 @@ public class CardServiceUnitTests {
   @Test(expected = InsufficientPrivilegesException.class)
   public void
       whenRepoFindsTheEntityToReplace_butUserDoesNotHaveAccess_thenInsufficientPrivilegesExceptionIsThrown() {
-    SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
+    SecurityContextHolder.getContext().setAuthentication(MEMBER_ONE_UPAT);
     CardDto replacementCard =
         CardDto.builder()
             .id(CARD_DTO.getId())
@@ -464,7 +431,7 @@ public class CardServiceUnitTests {
             .status(CardStatus.IN_PROGRESS)
             .build();
     when(cardRepository.findById(replacementCard.getId())).thenReturn(Optional.of(CARD_ENTITY));
-    when(accessCheckService.userHasAccessToCard(MEMBER_USER, CARD_ENTITY)).thenReturn(false);
+    when(accessCheckService.userHasAccessToCard(MEMBER_ONE_USER, CARD_ENTITY)).thenReturn(false);
     cardService.replaceCard(replacementCard.getId(), replacementCard);
   }
 
@@ -512,14 +479,14 @@ public class CardServiceUnitTests {
   
   @Test(expected = InsufficientPrivilegesException.class)
   public void whenRepoFindsTheEntityToUpdate_butUserDoesNotHaveAccess_thenInsufficientPrivilegesExceptionIsThrown(){
-    SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
+    SecurityContextHolder.getContext().setAuthentication(MEMBER_ONE_UPAT);
     CardDto patch = CardDto.builder()
             .id(CARD_DTO.getId())
             .name("PATCH")
             .description("A patch to card with ID: " + CARD_DTO.getId())
             .build();
     when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.of(CARD_ENTITY));
-    when(accessCheckService.userHasAccessToCard(MEMBER_USER, CARD_ENTITY)).thenReturn(false);
+    when(accessCheckService.userHasAccessToCard(MEMBER_ONE_USER, CARD_ENTITY)).thenReturn(false);
     cardService.updateCard(CARD_DTO.getId(), patch);
   }
   
