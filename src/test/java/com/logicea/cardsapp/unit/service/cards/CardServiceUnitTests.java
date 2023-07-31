@@ -5,8 +5,7 @@ import static com.logicea.cardsapp.util.TestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.logicea.cardsapp.model.card.CardDto;
 import com.logicea.cardsapp.model.card.CardEntity;
@@ -14,6 +13,7 @@ import com.logicea.cardsapp.model.card.CardStatus;
 import com.logicea.cardsapp.persistence.CardRepository;
 import com.logicea.cardsapp.service.cards.AccessCheckService;
 import com.logicea.cardsapp.service.cards.CardService;
+import com.logicea.cardsapp.service.cards.PatchMapper;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
 import com.logicea.cardsapp.util.PaginationTester;
 import com.logicea.cardsapp.util.SortOrder;
@@ -37,6 +37,9 @@ public class CardServiceUnitTests {
   @Mock private CardRepository cardRepository;
 
   @Mock private AccessCheckService accessCheckService;
+
+  @Mock
+  private PatchMapper patchMapper;
 
   @InjectMocks private CardService cardService;
 
@@ -478,6 +481,57 @@ public class CardServiceUnitTests {
   }
 
   /* PATCH tests */
-
-  // TODO
+  
+  @Test
+  public void whenRepoFindsTheEntityToUpdate_andUserHasAccess_thenOnlySpecifiedFieldsAreUpdated(){
+    SecurityContextHolder.getContext().setAuthentication(ADMIN_UPAT);
+    CardDto patch = CardDto.builder()
+            .id(CARD_DTO.getId())
+            .name("PATCH")
+            .description("A patch to card with ID: " + CARD_DTO.getId())
+            .build();
+    when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.of(CARD_ENTITY));
+    when(accessCheckService.userHasAccessToCard(ADMIN_USER, CARD_ENTITY)).thenReturn(true);
+    doAnswer(invocationOnMock -> {
+      CardDto cardDto = invocationOnMock.getArgument(0);
+      CardEntity cardEntity = invocationOnMock.getArgument(1);
+      cardEntity.setName(cardDto.getName());
+      cardEntity.setDescription(cardDto.getDescription());
+      return null;
+    }).when(patchMapper).updateEntityFromDto(patch, CARD_ENTITY);
+    when(cardRepository.save(any(CardEntity.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+    assertTrue(cardDtosEqual(
+            CardDto.builder()
+                    .id(CARD_DTO.getId())
+                    .name(patch.getName())
+                    .description(patch.getDescription())
+                    .status(CARD_ENTITY.getStatus())
+                    .color(CARD_ENTITY.getColor())
+                    .build(), cardService.updateCard(patch.getId(), patch)));
+  }
+  
+  @Test(expected = InsufficientPrivilegesException.class)
+  public void whenRepoFindsTheEntityToUpdate_butUserDoesNotHaveAccess_thenInsufficientPrivilegesExceptionIsThrown(){
+    SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
+    CardDto patch = CardDto.builder()
+            .id(CARD_DTO.getId())
+            .name("PATCH")
+            .description("A patch to card with ID: " + CARD_DTO.getId())
+            .build();
+    when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.of(CARD_ENTITY));
+    when(accessCheckService.userHasAccessToCard(MEMBER_USER, CARD_ENTITY)).thenReturn(false);
+    cardService.updateCard(CARD_DTO.getId(), patch);
+  }
+  
+  @Test(expected = CardNotFoundException.class)
+  public void whenRepoCannotFindTheEntityToUpdate_thenCardNotFoundExceptionIsThrown(){
+    SecurityContextHolder.getContext().setAuthentication(ADMIN_UPAT);
+    CardDto patch = CardDto.builder()
+            .id(CARD_DTO.getId())
+            .name("PATCH")
+            .description("A patch to card with ID: " + CARD_DTO.getId())
+            .build();
+    when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.empty());
+    cardService.updateCard(CARD_DTO.getId(), patch);
+  }
 }
