@@ -18,11 +18,12 @@ public class PaginationTester {
   @NonNull private final Integer pageSize;
   private final Map<String, String> filterParams;
   @NonNull private final Class<?> pojoType;
+  @NonNull private final List<Integer> expectedPageSizes;
 
   public void runTest(BiConsumer<AggregateGetQueryParams, Integer> test) {
     for (int i = 0; i < totalPages; i++) {
       final int finalI =  i; // Vars used in lambda expressions (below) should be final of effectively final.
-      Arrays.stream(pojoType.getFields())
+      Arrays.stream(pojoType.getDeclaredFields())
           .map(Field::getName)
           .toList()
           .forEach(
@@ -38,14 +39,7 @@ public class PaginationTester {
                                       .sortOrder(sortOrder)
                                       .filterParams(filterParams)
                                       .build(),
-                                  expectedPageNumber(finalI, totalPages, pageSize))));
+                                  expectedPageSizes.get(finalI))));
     }
-  }
-  
-  private int expectedPageNumber(int currentPageIdx, int totalPageNum, int pageSize){
-      if((currentPageIdx < totalPageNum - 1) || (totalPageNum % pageSize == 0)){
-          return pageSize;
-      }
-      return totalPageNum % pageSize;
   }
 }

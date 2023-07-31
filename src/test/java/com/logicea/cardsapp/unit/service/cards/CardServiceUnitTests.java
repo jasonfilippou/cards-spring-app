@@ -20,10 +20,7 @@ import com.logicea.cardsapp.util.SortOrder;
 import com.logicea.cardsapp.util.exceptions.CardNotFoundException;
 import com.logicea.cardsapp.util.exceptions.InsufficientPrivilegesException;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -75,20 +72,20 @@ public class CardServiceUnitTests {
 
   // We will consider a CardDto to be "equal" to a CardEntity if the non-audit fields match.
   private static boolean cardDtoAndEntityEqual(CardDto cardDto, CardEntity cardEntity) {
-    return cardDto.getId().equals(cardEntity.getId())
-        && cardDto.getStatus().equals(cardEntity.getStatus())
-        && cardDto.getDescription().equals(cardEntity.getDescription())
-        && cardDto.getColor().equals(cardEntity.getColor())
-        && cardDto.getName().equals(cardEntity.getName());
+    return Objects.equals(cardDto.getId(), cardEntity.getId())
+        && Objects.equals(cardDto.getStatus(), cardEntity.getStatus())
+        && Objects.equals(cardDto.getDescription(), cardEntity.getDescription())
+        && Objects.equals(cardDto.getColor(), cardEntity.getColor())
+        && Objects.equals(cardDto.getName(), cardEntity.getName());
   }
-  
+
   // We will do the same for two CardDto instances.
-  private static boolean cardDtosEqual(CardDto dtoOne, CardDto dtoTwo){
-    return dtoOne.getId().equals(dtoTwo.getId())
-            && dtoOne.getStatus().equals(dtoTwo.getStatus())
-            && dtoOne.getDescription().equals(dtoTwo.getDescription())
-            && dtoOne.getColor().equals(dtoTwo.getColor())
-            && dtoOne.getName().equals(dtoTwo.getName());
+  private static boolean cardDtosEqual(CardDto dtoOne, CardDto dtoTwo) {
+    return Objects.equals(dtoOne.getId(), dtoTwo.getId())
+        && Objects.equals(dtoOne.getStatus(), dtoTwo.getStatus())
+        && Objects.equals(dtoOne.getDescription(), dtoTwo.getDescription())
+        && Objects.equals(dtoOne.getColor(), dtoTwo.getColor())
+        && Objects.equals(dtoOne.getName(), dtoTwo.getName());
   }
 
   /* GET by ID tests */
@@ -132,6 +129,7 @@ public class CardServiceUnitTests {
         .pageSize(20)
         .pojoType(CardDto.class)
         .filterParams(Collections.emptyMap())
+        .expectedPageSizes(List.of(20))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
 
@@ -141,6 +139,7 @@ public class CardServiceUnitTests {
         .pageSize(10)
         .pojoType(CardDto.class)
         .filterParams(Collections.emptyMap())
+        .expectedPageSizes(List.of(10, 10))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
 
@@ -150,6 +149,7 @@ public class CardServiceUnitTests {
         .pageSize(5)
         .pojoType(CardDto.class)
         .filterParams(Collections.emptyMap())
+        .expectedPageSizes(List.of(5, 5, 5, 5))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
 
@@ -160,6 +160,7 @@ public class CardServiceUnitTests {
         .pageSize(3)
         .pojoType(CardDto.class)
         .filterParams(Collections.emptyMap())
+        .expectedPageSizes(List.of(3, 3, 3, 3, 3, 3, 2))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithoutFilters);
   }
@@ -170,14 +171,15 @@ public class CardServiceUnitTests {
     Integer pageSize = params.getPageSize();
     String sortByField = params.getSortByField();
     SortOrder sortOrder = params.getSortOrder();
-    List<CardEntity> expectedList =
+    List<CardEntity> sortedList =
         CARD_ENTITIES.stream()
-            .sorted(
-                (t1, t2) ->
-                    compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-            .toList()
-            .subList(page * pageSize, pageSize * (page + 1));
-    mockWithExpectedList(params, expectedList);
+            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
+            .toList();
+    List<CardEntity> slicedList =
+        sortedList.subList(
+                page * pageSize,
+                Math.min(pageSize * page + pageSize, sortedList.size()));
+    mockWithExpectedList(params, slicedList);
     makePaginationAndSortingQueryAssertions(
         cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
   }
@@ -191,7 +193,7 @@ public class CardServiceUnitTests {
 
   private void makePaginationAndSortingQueryAssertions(
       List<CardDto> returnedDtos, int expectedNumEntries, String sortByField, SortOrder sortOrder) {
-    assertEquals(returnedDtos.size(), expectedNumEntries);
+    assertEquals(expectedNumEntries, returnedDtos.size());
     assertTrue(collectionIsSortedByFieldInGivenDirection(returnedDtos, sortByField, sortOrder));
   }
 
@@ -208,6 +210,7 @@ public class CardServiceUnitTests {
         .pageSize(9)
         .pojoType(CardDto.class)
         .filterParams(Map.of(NAME_FILTER_STRING, NAME))
+        .expectedPageSizes(List.of(9))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithNameFilter);
 
@@ -218,6 +221,7 @@ public class CardServiceUnitTests {
         .pageSize(3)
         .pojoType(CardDto.class)
         .filterParams(Map.of(NAME_FILTER_STRING, NAME))
+        .expectedPageSizes(List.of(3, 3, 3))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithNameFilter);
 
@@ -228,6 +232,7 @@ public class CardServiceUnitTests {
         .pageSize(4)
         .pojoType(CardDto.class)
         .filterParams(Map.of(NAME_FILTER_STRING, NAME))
+        .expectedPageSizes(List.of(4, 4, 1))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithNameFilter);
   }
@@ -240,15 +245,16 @@ public class CardServiceUnitTests {
     SortOrder sortOrder = params.getSortOrder();
     Map<String, String> filters = params.getFilterParams();
     assert filters.containsKey(NAME_FILTER_STRING);
-    List<CardEntity> expectedList =
+    List<CardEntity> filteredAndSortedList =
         CARD_ENTITIES.stream()
             .filter(cardEntity -> cardEntity.getName().equals(filters.get(NAME_FILTER_STRING)))
-            .sorted(
-                (t1, t2) ->
-                    compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-            .toList()
-            .subList(page * pageSize, pageSize * (page + 1));
-    mockWithExpectedList(params, expectedList);
+            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
+            .toList();
+    List<CardEntity> slicedList =
+        filteredAndSortedList.subList(
+                page * pageSize,
+            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
+    mockWithExpectedList(params, slicedList);
     makePaginationAndSortingQueryAssertions(
         cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
   }
@@ -266,6 +272,7 @@ public class CardServiceUnitTests {
         .pageSize(5)
         .pojoType(CardDto.class)
         .filterParams(Map.of(COLOR_FILTER_STRING, COLOR))
+        .expectedPageSizes(Collections.singletonList(5))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithColorFilter);
 
@@ -276,6 +283,7 @@ public class CardServiceUnitTests {
         .pageSize(3)
         .pojoType(CardDto.class)
         .filterParams(Map.of(COLOR_FILTER_STRING, COLOR))
+        .expectedPageSizes(List.of(3, 2))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithColorFilter);
 
@@ -286,6 +294,7 @@ public class CardServiceUnitTests {
         .pageSize(2)
         .pojoType(CardDto.class)
         .filterParams(Map.of(COLOR_FILTER_STRING, COLOR))
+        .expectedPageSizes(List.of(2, 2, 1))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithColorFilter);
   }
@@ -298,15 +307,16 @@ public class CardServiceUnitTests {
     SortOrder sortOrder = params.getSortOrder();
     Map<String, String> filters = params.getFilterParams();
     assert filters.containsKey(COLOR_FILTER_STRING);
-    List<CardEntity> expectedList =
+    List<CardEntity> filteredAndSortedList =
         CARD_ENTITIES.stream()
             .filter(cardEntity -> cardEntity.getColor().equals(filters.get(COLOR_FILTER_STRING)))
-            .sorted(
-                (t1, t2) ->
-                    compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-            .toList()
-            .subList(page * pageSize, pageSize * (page + 1));
-    mockWithExpectedList(params, expectedList);
+            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
+            .toList();
+    List<CardEntity> slicedList =
+        filteredAndSortedList.subList(
+                page * pageSize,
+            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
+    mockWithExpectedList(params, slicedList);
     makePaginationAndSortingQueryAssertions(
         cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
   }
@@ -324,6 +334,7 @@ public class CardServiceUnitTests {
         .pageSize(8)
         .pojoType(CardDto.class)
         .filterParams(Map.of(STATUS_FILTER_STRING, STATUS.toString()))
+        .expectedPageSizes(Collections.singletonList(8))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithStatusFilter);
 
@@ -334,6 +345,7 @@ public class CardServiceUnitTests {
         .pageSize(5)
         .pojoType(CardDto.class)
         .filterParams(Map.of(STATUS_FILTER_STRING, STATUS.toString()))
+        .expectedPageSizes(List.of(5, 3))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithStatusFilter);
   }
@@ -346,17 +358,18 @@ public class CardServiceUnitTests {
     SortOrder sortOrder = params.getSortOrder();
     Map<String, String> filters = params.getFilterParams();
     assert filters.containsKey(STATUS_FILTER_STRING);
-    List<CardEntity> expectedList =
+    List<CardEntity> filteredAndSortedList =
         CARD_ENTITIES.stream()
             .filter(
                 cardEntity ->
                     cardEntity.getStatus().toString().equals(filters.get(STATUS_FILTER_STRING)))
-            .sorted(
-                (t1, t2) ->
-                    compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-            .toList()
-            .subList(page * pageSize, pageSize * (page + 1));
-    mockWithExpectedList(params, expectedList);
+            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
+            .toList();
+    List<CardEntity> slicedList =
+        filteredAndSortedList.subList(
+                page * pageSize,
+            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
+    mockWithExpectedList(params, slicedList);
     makePaginationAndSortingQueryAssertions(
         cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
   }
@@ -376,9 +389,13 @@ public class CardServiceUnitTests {
         .filterParams(
             Map.of(
                 BEGIN_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().minusMinutes(5).format(DATE_TIME_FORMATTER),
+                    LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                        .minusMinutes(5)
+                        .format(DATE_TIME_FORMATTER),
                 END_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().format(DATE_TIME_FORMATTER)))
+                    LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                        .format(DATE_TIME_FORMATTER)))
+        .expectedPageSizes(Collections.singletonList(5))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithCreationDateFilters);
 
@@ -391,9 +408,13 @@ public class CardServiceUnitTests {
         .filterParams(
             Map.of(
                 BEGIN_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().minusMinutes(5).format(DATE_TIME_FORMATTER),
+                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                    .minusMinutes(5)
+                    .format(DATE_TIME_FORMATTER),
                 END_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().format(DATE_TIME_FORMATTER)))
+                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                    .format(DATE_TIME_FORMATTER)))
+        .expectedPageSizes(List.of(4, 1))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithCreationDateFilters);
   }
@@ -407,7 +428,7 @@ public class CardServiceUnitTests {
     Map<String, String> filters = params.getFilterParams();
     assert filters.containsKey(BEGIN_CREATION_DATE_FILTER_STRING)
         && filters.containsKey(END_CREATION_DATE_FILTER_STRING);
-    List<CardEntity> expectedList =
+    List<CardEntity> filteredAndSortedList =
         CARD_ENTITIES.stream()
             .filter(
                 cardEntity ->
@@ -417,12 +438,13 @@ public class CardServiceUnitTests {
                             filters.get(BEGIN_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER),
                         LocalDateTime.parse(
                             filters.get(END_CREATION_DATE_FILTER_STRING), DATE_TIME_FORMATTER)))
-            .sorted(
-                (t1, t2) ->
-                    compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-            .toList()
-            .subList(page * pageSize, pageSize * (page + 1));
-    mockWithExpectedList(params, expectedList);
+            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
+            .toList();
+    List<CardEntity> slicedList =
+        filteredAndSortedList.subList(
+                page * pageSize,
+            Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
+    mockWithExpectedList(params, slicedList);
     makePaginationAndSortingQueryAssertions(
         cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
   }
@@ -452,11 +474,15 @@ public class CardServiceUnitTests {
         .filterParams(
             Map.of(
                 BEGIN_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().minusMinutes(5).format(DATE_TIME_FORMATTER),
+                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                    .minusMinutes(5)
+                    .format(DATE_TIME_FORMATTER),
                 END_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().format(DATE_TIME_FORMATTER),
-                STATUS_FILTER_STRING,
-                STATUS.toString()))
+                LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                    .format(DATE_TIME_FORMATTER),
+                    STATUS_FILTER_STRING,
+                    STATUS.toString()))
+        .expectedPageSizes(Collections.singletonList(3))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithStatusAndCreationDateFilters);
 
@@ -466,13 +492,17 @@ public class CardServiceUnitTests {
         .pageSize(2)
         .pojoType(CardDto.class)
         .filterParams(
-            Map.of(
-                BEGIN_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().minusMinutes(5).format(DATE_TIME_FORMATTER),
-                END_CREATION_DATE_FILTER_STRING,
-                LocalDateTime.now().format(DATE_TIME_FORMATTER),
-                STATUS_FILTER_STRING,
-                STATUS.toString()))
+                Map.of(
+                        BEGIN_CREATION_DATE_FILTER_STRING,
+                        LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                                .minusMinutes(5)
+                                .format(DATE_TIME_FORMATTER),
+                        END_CREATION_DATE_FILTER_STRING,
+                        LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                                .format(DATE_TIME_FORMATTER),
+                        STATUS_FILTER_STRING,
+                        STATUS.toString()))
+        .expectedPageSizes(List.of(2, 1))
         .build()
         .runTest(this::testPaginatedAndSortedAggregateGetWithStatusAndCreationDateFilters);
   }
@@ -487,7 +517,7 @@ public class CardServiceUnitTests {
     assert filters.containsKey(BEGIN_CREATION_DATE_FILTER_STRING)
         && filters.containsKey(END_CREATION_DATE_FILTER_STRING)
         && filters.containsKey(STATUS_FILTER_STRING);
-    List<CardEntity> expectedList =
+    List<CardEntity> filteredAndSortedList =
         CARD_ENTITIES.stream()
             .filter(
                 cardEntity ->
@@ -502,31 +532,34 @@ public class CardServiceUnitTests {
                             .getStatus()
                             .toString()
                             .equals(filters.get(STATUS_FILTER_STRING)))
-            .sorted(
-                (t1, t2) ->
-                    compareFieldsInGivenOrder(t1.getClass(), t2.getClass(), sortByField, sortOrder))
-            .toList()
-            .subList(page * pageSize, pageSize * (page + 1));
-    mockWithExpectedList(params, expectedList);
+            .sorted((t1, t2) -> compareFieldsInGivenOrder(t1, t2, sortByField, sortOrder))
+            .toList();
+    List<CardEntity> slicedList =
+        filteredAndSortedList.subList(
+                page * pageSize,
+                Math.min(pageSize * page + pageSize, filteredAndSortedList.size()));
+    mockWithExpectedList(params, slicedList);
     makePaginationAndSortingQueryAssertions(
         cardService.getAllCardsByFilter(params), expectedNumEntries, sortByField, sortOrder);
   }
-  
+
   @Test(expected = InsufficientPrivilegesException.class)
-  public void whenAttemptingToGetADifferentUsersCards_whileNotAdmin_thenInsufficientPrivilegesExceptionIsThrown(){
+  public void
+      whenAttemptingToGetADifferentUsersCards_whileNotAdmin_thenInsufficientPrivilegesExceptionIsThrown() {
     SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
-    AggregateGetQueryParams paramsWithOtherUsersEmail = 
-            AggregateGetQueryParams.builder()
-                    .filterParams(Map.of(CREATING_USER_FILTER_STRING, ADMIN_EMAIL)).build();
+    AggregateGetQueryParams paramsWithOtherUsersEmail =
+        AggregateGetQueryParams.builder()
+            .filterParams(Map.of(CREATING_USER_FILTER_STRING, ADMIN_EMAIL))
+            .build();
     // Mocking just for consistency, since this would return true anyhow.
     when(accessCheckService.userIsMember(MEMBER_USER)).thenReturn(true);
     cardService.getAllCardsByFilter(paramsWithOtherUsersEmail);
   }
 
   /* POST tests */
-  
+
   @Test
-  public void whenRepoPersistsACardSuccessfully_thenTheCardIsReturned(){
+  public void whenRepoPersistsACardSuccessfully_thenTheCardIsReturned() {
     when(cardRepository.save(any(CardEntity.class))).thenReturn(CARD_ENTITY);
     assertTrue(cardDtosEqual(CARD_DTO, cardService.storeCard(CARD_DTO)));
   }
@@ -534,29 +567,75 @@ public class CardServiceUnitTests {
   /* DELETE tests */
 
   @Test
-  public void whenRepoFindsTheCardById_andUserHasAccessToIt_thenDeleteShouldWork(){
+  public void whenRepoFindsTheCardById_andUserHasAccessToIt_thenDeleteShouldWork() {
     SecurityContextHolder.getContext().setAuthentication(ADMIN_UPAT);
     when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.of(CARD_ENTITY));
-    when(accessCheckService.userHasAccessToCard(ADMIN_USER, CARD_ENTITY)).thenReturn(true); 
+    when(accessCheckService.userHasAccessToCard(ADMIN_USER, CARD_ENTITY)).thenReturn(true);
     doNothing().when(cardRepository).deleteById(CARD_DTO.getId());
     cardService.deleteCard(CARD_DTO.getId());
   }
 
   @Test(expected = InsufficientPrivilegesException.class)
-  public void whenRepoFindsTheCardById_andUserDoesNotHaveAccessToIt_thenInsufficientPrivilegesExceptionIsThrown(){
+  public void
+      whenRepoFindsTheCardById_andUserDoesNotHaveAccessToIt_thenInsufficientPrivilegesExceptionIsThrown() {
     SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
     when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.of(CARD_ENTITY));
     when(accessCheckService.userHasAccessToCard(MEMBER_USER, CARD_ENTITY)).thenReturn(false);
     cardService.deleteCard(CARD_DTO.getId());
   }
-  
+
   @Test(expected = CardNotFoundException.class)
-  public void whenRepoCannotFindTheCardWeWantToDelete_thenCardNotFoundExceptionIsThrown(){
+  public void whenRepoCannotFindTheCardWeWantToDelete_thenCardNotFoundExceptionIsThrown() {
     when(cardRepository.findById(CARD_DTO.getId())).thenReturn(Optional.empty());
     cardService.deleteCard(CARD_DTO.getId());
   }
-  
+
   /* PUT tests */
+
+  @Test
+  public void whenRepoFindsTheEntityToReplace_andUserHasAccess_thenReplacementIsReturned() {
+    SecurityContextHolder.getContext().setAuthentication(ADMIN_UPAT);
+    CardDto replacementCard =
+        CardDto.builder()
+            .id(CARD_DTO.getId())
+            .name(CARD_DTO.getName() + " - REPLACEMENT")
+            .status(CardStatus.IN_PROGRESS)
+            .build();
+    when(cardRepository.findById(replacementCard.getId())).thenReturn(Optional.of(CARD_ENTITY));
+    when(accessCheckService.userHasAccessToCard(ADMIN_USER, CARD_ENTITY)).thenReturn(true);
+    when(cardRepository.save(any(CardEntity.class)))
+        .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+    assertTrue(
+        cardDtosEqual(
+            replacementCard, cardService.replaceCard(replacementCard.getId(), replacementCard)));
+  }
+
+  @Test(expected = InsufficientPrivilegesException.class)
+  public void
+      whenRepoFindsTheEntityToReplace_butUserDoesNotHaveAccess_thenInsufficientPrivilegesExceptionIsThrown() {
+    SecurityContextHolder.getContext().setAuthentication(MEMBER_UPAT);
+    CardDto replacementCard =
+        CardDto.builder()
+            .id(CARD_DTO.getId())
+            .name(CARD_DTO.getName() + " - REPLACEMENT")
+            .status(CardStatus.IN_PROGRESS)
+            .build();
+    when(cardRepository.findById(replacementCard.getId())).thenReturn(Optional.of(CARD_ENTITY));
+    when(accessCheckService.userHasAccessToCard(MEMBER_USER, CARD_ENTITY)).thenReturn(false);
+    cardService.replaceCard(replacementCard.getId(), replacementCard);
+  }
+
+  @Test(expected = CardNotFoundException.class)
+  public void whenRepoCannotFindTheEntityToReplace_thenCardNotFoundExceptionIsThrown() {
+    CardDto replacementCard =
+        CardDto.builder()
+            .id(CARD_DTO.getId())
+            .name(CARD_DTO.getName() + " - REPLACEMENT")
+            .status(CardStatus.IN_PROGRESS)
+            .build();
+    when(cardRepository.findById(replacementCard.getId())).thenReturn(Optional.empty());
+    cardService.replaceCard(replacementCard.getId(), replacementCard);
+  }
 
   /* PATCH tests */
 

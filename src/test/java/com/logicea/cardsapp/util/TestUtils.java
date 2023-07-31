@@ -18,6 +18,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.logicea.cardsapp.util.Constants.DATE_TIME_FORMATTER;
+
 public final class TestUtils {
 
   private TestUtils() {}
@@ -91,7 +93,7 @@ public final class TestUtils {
                         .build()));
     return retVal;
   }
-  // Get n DTOs that were created in a decreasing number of minutes before now().
+  // Get n DTOs that were created in a decreasing number of minutes before New Year's Eve 2023.
   
   public static List<CardDto> getNDtosOfDescriptionDesc(int n) {
     List<CardDto> retVal = Lists.newArrayListWithCapacity(n);
@@ -105,7 +107,8 @@ public final class TestUtils {
                         .description("Description of card: " + currentCardId)
                         .color("#4F123O")
                         .status((i < n / 2) ? CardStatus.DONE : STATUS) // To add some variability in the queries.
-                        .createdDateTime(LocalDateTime.now().minusMinutes(n - i))
+                        .createdDateTime(LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
+                                .minusMinutes(n - i))
                         .build()));
     return retVal;
   }
@@ -147,14 +150,14 @@ public final class TestUtils {
     return Comparators.isInOrder(
         pojos,
         (p1, p2) ->
-            compareFieldsInGivenOrder(p1.getClass(), p2.getClass(), sortByField, sortOrder));
+            compareFieldsInGivenOrder(p1, p2, sortByField, sortOrder));
   }
 
   public static <T extends Comparable<T>> int compareFieldsInGivenOrder(
-      Class<?> pojoOne, Class<?> pojoTwo, String sortByField, SortOrder sortOrder) {
+      Object pojoOne, Object pojoTwo, String sortByField, SortOrder sortOrder) {
     try {
-      assert pojoOne.equals(pojoTwo);
-      PropertyDescriptor propertyDescriptor = new PropertyDescriptor(sortByField, pojoOne);
+      assert pojoOne.getClass().equals(pojoTwo.getClass());
+      PropertyDescriptor propertyDescriptor = new PropertyDescriptor(sortByField, pojoOne.getClass());
       Method appropriateGetter = propertyDescriptor.getReadMethod();
       @SuppressWarnings("unchecked")
       T pojoOneFieldValue = (T) appropriateGetter.invoke(pojoOne);
@@ -167,7 +170,7 @@ public final class TestUtils {
       throw new RuntimeException(e.getMessage());
     } catch (ClassCastException exc) {
       throw new RuntimeException(
-          "Field " + sortByField + " of " + pojoOne.getSimpleName() + " is not Comparable.");
+          "Field " + sortByField + " of " + pojoOne.getClass().getSimpleName() + " is not Comparable.");
     }
   }
 }
