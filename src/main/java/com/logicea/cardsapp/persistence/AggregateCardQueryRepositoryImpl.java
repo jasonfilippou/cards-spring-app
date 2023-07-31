@@ -69,8 +69,7 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
   }
 
   // Not easily maintainable code; we could use the Specification interface to generify our
-  // predicates.
-  // TODO: improve the following using the Specification interface.
+  // predicates. TODO: improve the following using the Specification interface.
   private List<Predicate> extractPredicatesFromFilterParams(
       Map<String, String> params, CriteriaBuilder cb, Root<CardEntity> root, User user)
       throws ParseException {

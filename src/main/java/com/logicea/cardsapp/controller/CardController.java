@@ -66,7 +66,7 @@ public class CardController {
       @RequestParam(name = "sort_by_field", defaultValue = DEFAULT_SORT_BY_FIELD) @NonNull @NotBlank
           String sortByField,
       @RequestParam(name = "sort_order", defaultValue = DEFAULT_SORT_ORDER) @NonNull
-          SortOrder sortOrder) {
+          SortOrder sortOrder) throws InvalidSortByFieldException{
     List<String> cardFieldNames =
         Arrays.stream(CardDto.class.getDeclaredFields()).map(Field::getName).toList();
     if (!cardFieldNames.contains(sortByField)) {
