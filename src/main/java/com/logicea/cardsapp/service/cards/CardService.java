@@ -73,6 +73,8 @@ public class CardService {
     // Need to set those parameters explicitly because of the way save() works.
     newCard.setCreatedDateTime(createdDateTime);
     newCard.setCreatedBy(createdBy);
+    newCard.setLastModifiedDateTime(LocalDateTime.now());
+    newCard.setLastModifiedBy(loggedInUser.getUsername());
     return fromCardEntityToCardDto(newCard);
   }
   
