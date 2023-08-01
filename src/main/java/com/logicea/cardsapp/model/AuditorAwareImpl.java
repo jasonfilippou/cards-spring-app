@@ -6,6 +6,13 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
+/**
+ * The implementation of {@link AuditorAware} that we use in our application.
+ * 
+ * @author jason 
+ * 
+ * @see com.logicea.cardsapp.config.JpaConfig
+ */
 public class AuditorAwareImpl implements AuditorAware<String> {
 
   @Override

@@ -35,6 +35,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+/**
+ * Integration tests for the application. Load and dump the entire Spring Context per each method. Implemented
+ * using jUnit4 assertions.
+ * 
+ * @author jason 
+ * 
+ * @see com.logicea.cardsapp.unit.controller.CardControllerUnitTests
+ * @see com.logicea.cardsapp.unit.service.cards.CardServiceUnitTests
+ */
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @NoArgsConstructor

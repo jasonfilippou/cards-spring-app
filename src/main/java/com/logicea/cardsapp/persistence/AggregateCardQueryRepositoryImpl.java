@@ -24,6 +24,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+/**
+ * The implementation of {@link AggregateCardQueryRepository}. Uses the <a href = "https://www.baeldung.com/spring-data-criteria-queries">
+ * Spring Data JPA Criteria API</a> to implement the user's filters.
+ * 
+ * @author jason 
+ */
 @Repository
 @RequiredArgsConstructor
 public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepository {

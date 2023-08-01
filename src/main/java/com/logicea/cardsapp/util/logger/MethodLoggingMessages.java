@@ -9,7 +9,7 @@ import org.aspectj.lang.JoinPoint;
  * log their messages.
  *
  * @author jason
- * @see JoinPoint
+ * @see ComponentLogger
  */
 public final class MethodLoggingMessages {
 

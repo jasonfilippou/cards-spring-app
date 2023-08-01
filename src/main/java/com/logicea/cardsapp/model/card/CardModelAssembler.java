@@ -6,6 +6,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.logicea.cardsapp.controller.CardController;
 import com.logicea.cardsapp.util.SortOrder;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import lombok.NonNull;
@@ -15,6 +16,14 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+/**
+ * A class that uses SpringHATEOAS static methods to render links to related resources for cards.
+ * 
+ * @see org.springframework.hateoas.server.mvc.WebMvcLinkBuilder#methodOn(Class, Object...) 
+ * @see org.springframework.hateoas.server.mvc.WebMvcLinkBuilder#linkTo(Method) 
+ * 
+ * @author jason 
+ */
 @Component
 public class CardModelAssembler
     implements RepresentationModelAssembler<CardDto, EntityModel<CardDto>> {

@@ -6,6 +6,7 @@ import com.logicea.cardsapp.model.card.CardDto;
 import com.logicea.cardsapp.model.card.CardModelAssembler;
 import com.logicea.cardsapp.service.cards.CardService;
 import com.logicea.cardsapp.util.AggregateGetQueryParams;
+import com.logicea.cardsapp.util.Constants;
 import com.logicea.cardsapp.util.SortOrder;
 import com.logicea.cardsapp.util.exceptions.CardNameCannotBeBlankException;
 import com.logicea.cardsapp.util.exceptions.CardNameNotProvidedException;
@@ -31,7 +32,8 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for querying the API for {@link CardDto} instances. Supports operations for POST, GET
- * (id and aggreggate), PUT, PATCH and DELETE.
+ * (id and aggreggate), PUT, PATCH and DELETE. <a href = "https://hibernate.org/validator/#:~:text=Hibernate%20Validator%20allows%20to%20express,server%20and%20client%20application%20programming.">
+ * Hibernate validators</a> are used to validate the request bodies, where applicable.
  *
  * @author jason
  * @see CardDto
@@ -49,8 +51,20 @@ public class CardController {
 
   private final CardModelAssembler assembler;
 
+  /**
+   * POST mapping endpoint for cards. 
+   * @param cardDto The deserialized JSON payload describing the card's parameters.
+   * @return A {@link ResponseEntity} with appropriate status:
+   * <ul>
+   *     <li>{@link HttpStatus#BAD_REQUEST} and an error message in the case of bad requests.</li>
+   *     <li>{@link HttpStatus#OK} and an updated payload with the original card data enhanced with audit data 
+   *     in the case of successful requests.</li>
+   * </ul>
+   * @throws CardNameNotProvidedException if the user does not supply a card name. We require that new card instances
+   * in the API have a card name.
+   */
   @PostMapping("/card")
-  public ResponseEntity<EntityModel<CardDto>> postCard(@RequestBody @Valid CardDto cardDto) {
+  public ResponseEntity<EntityModel<CardDto>> postCard(@RequestBody @Valid CardDto cardDto) throws CardNameNotProvidedException {
     if (StringUtils.isBlank(cardDto.getName())){
       throw new CardNameNotProvidedException();
     }
@@ -58,11 +72,32 @@ public class CardController {
                 assembler.toModel(cardService.storeCard(cardDto)), HttpStatus.CREATED);
   }
 
+  /**
+   * Get-by-ID endpoint. Member users that attempt to access cards of other member users or admins cannot do so,
+   * and are informed via the return of status code {@link HttpStatus#FORBIDDEN}.
+   * @param id The unique ID of the card to look up.
+   * @return A {@link ResponseEntity} with either an error status code and an error message or {@link HttpStatus#OK}
+   * and the requested card's payload.
+   */
   @GetMapping("/card/{id}")
   public ResponseEntity<EntityModel<CardDto>> getCard(@PathVariable Long id) {
     return ResponseEntity.ok(assembler.toModel(cardService.getCard(id)));
   }
 
+  /**
+   * Aggregate GET endpoint for filtered, paginated and sorted queries for multiple cards.
+   * @param filterParams A {@link Map} describing the possible filters to filter returned cards by. For example,
+   *                     {@link Constants#NAME_FILTER_STRING}, {@link Constants#COLOR_FILTER_STRING}. 
+   * @param page The zero-based index of the page that we want to return, default 0.
+   * @param pageSize The number of records per page to return, default 5.
+   * @param sortByField The field to sort the responses by, default &quot;id&quot;
+   * @param sortOrder The sort order of the results, default {@link SortOrder#ASC}.
+   * @return A {@link ResponseEntity} with {@link HttpStatus#OK} and  the cards that specify the required criteria, 
+   * or a combination of appropriate Http error code and error text. Members that attempt to filter by a different member's
+   * or an admin's username are returned an error {@link HttpStatus#FORBIDDEN}.
+   * @throws InvalidSortByFieldException if the user provides an invalid field to sort by. Note that fields need to be 
+   * provided in camelCase format.
+   */
   @GetMapping("/card")
   public ResponseEntity<CollectionModel<EntityModel<CardDto>>> aggregateGetCards(
       @RequestParam Map<String, String> filterParams,
@@ -90,18 +125,38 @@ public class CardController {
                     .build())));
   }
 
+  /**
+   * PUT endpoint for Cards. We follow the traditional semantics of PUT, for full replacement, but for auditing purposes
+   * we do not update the creation timestamp. Members that attempt to PUT on an ID that they have not POST-ed 
+   * receive a {@link HttpStatus#FORBIDDEN} error code and an appropriate message.
+   * @param id THe unique ID of the card to replace. 
+   * @param cardDto The data of the new card to replace. It should provide a name.
+   * @return The updated card and {@link HttpStatus#OK}, or a combination of Http error code and error text.
+   * @throws CardNameNotProvidedException if the user has not provided a name for the new card.
+   */
   @PutMapping("/card/{id}")
   public ResponseEntity<EntityModel<CardDto>> putCard(
-      @PathVariable Long id, @RequestBody @Valid CardDto cardDto) {
+      @PathVariable Long id, @RequestBody @Valid CardDto cardDto)  throws CardNameNotProvidedException{
     if(StringUtils.isBlank(cardDto.getName())){
       throw new CardNameNotProvidedException();
     }
     return ResponseEntity.ok(assembler.toModel(cardService.replaceCard(id, cardDto)));
   }
 
+  /**
+   * PATCH endpoint for cards. {@literal null} or missing entries are ignored. We do not allow the user to clear the
+   * name of the card, though. Members that attempt to PATCH on an ID that they have not POST-ed
+   * receive a {@link HttpStatus#FORBIDDEN} error code and an appropriate message.
+   * @param id THe unique ID of the card to update.
+   * @param cardDto The data of the new card to update.
+   * @return The updated card and {@link HttpStatus#OK}, or a combination of Http error code and error text.
+   * @throws CardNameCannotBeBlankException if the user tries to clear the name of the card by providing a whitespace-only
+   * non-{@literal null} string.
+   */
   @PatchMapping("/card/{id}")
   public ResponseEntity<EntityModel<CardDto>> patchCard(
-      @PathVariable Long id, @RequestBody @Valid CardDto cardDto) {
+      @PathVariable Long id, @RequestBody @Valid CardDto cardDto)
+      throws CardNameCannotBeBlankException {
     // We don't allow clearing the name of a card.
     if(StringUtils.isWhitespace(cardDto.getName())){ // StringUtils.isWhitespace(null) returns false, which is good.
       throw new CardNameCannotBeBlankException();
@@ -109,6 +164,14 @@ public class CardController {
     return ResponseEntity.ok(assembler.toModel(cardService.updateCard(id, cardDto)));
   }
 
+  /**
+   * DELETE endpoint for cards. We hard-delete cards from the database, for simplicity. Members that attempt to DELETE 
+   * an ID that they have not POST-ed receive a {@link HttpStatus#FORBIDDEN} error code and an appropriate message.
+   * @param id The unique ID of the card to delete. If we cannot find the ID, we choose to send a
+   * {@link HttpStatus#NOT_FOUND} error code to the user.
+   * @return A no-content {@link ResponseEntity} if the deletion worked well, otherwise a combination of Http status
+   * code and error.
+   */
   @DeleteMapping("/card/{id}")
   public ResponseEntity<?> deleteCard(@PathVariable Long id) {
     cardService.deleteCard(id);

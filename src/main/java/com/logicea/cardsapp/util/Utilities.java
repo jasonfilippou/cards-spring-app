@@ -4,6 +4,11 @@ package com.logicea.cardsapp.util;
 import com.logicea.cardsapp.model.card.CardDto;
 import com.logicea.cardsapp.model.card.CardEntity;
 
+/**
+ * Static Utility methods used by our application.
+ *
+ * @author jason
+ */
 public final class Utilities {
     
     private Utilities(){}

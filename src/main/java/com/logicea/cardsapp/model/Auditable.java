@@ -18,6 +18,19 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * An {@literal abstract} class extended by entity classes that allows them to automatically persist audit 
+ * information for their stored interfaces. This information consists of:
+ * <ul>
+ *     <li>Creation Timestamp</li>
+ *     <li>Creating User</li>
+ *     <li>Last Modification Timestamp</li>
+ *     <li>Last Modifying user</li>
+ * </ul>
+ * @param <U> the type that uniquely identifies a given user, e.g {@link String} for usernames.
+ *           
+ * @author jason 
+ */
 @MappedSuperclass
 @Getter
 @EntityListeners(AuditingEntityListener.class)

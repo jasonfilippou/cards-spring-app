@@ -21,6 +21,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller for user authentication. Provides endpoints for authentication and login.
+ *
+ * @author jason
+ */
 @RestController
 @RequestMapping("/cardsapi")
 @CrossOrigin

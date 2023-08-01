@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 /**
  * AOP-enabled class that logs all calls to {@literal public} methods of repositories annotated with {@link Logged}.
  * Calls to entrance, exit and exception throwing are all logged.
- * By targeting the annotation {@literal @CustomRepositoryAnnotation} on the repositories involved, we only have one logger class for our persistence layer.
  * @author jason
+ * @see MethodLoggingMessages
  */
 @Component
 @Aspect

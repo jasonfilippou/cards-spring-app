@@ -17,6 +17,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+/**
+ * Unit tests for {@link JwtAuthenticationService}. Perform extensive use of Mockito and jUnit4 assertions.
+ * 
+ * @author jason 
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationServiceUnitTests {
   private static final String USERNAME = RandomStringUtils.randomAlphanumeric(10);

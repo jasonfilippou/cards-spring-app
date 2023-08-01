@@ -8,6 +8,12 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.stereotype.Component;
 
+/**
+ * A {@link Mapper} used by PATCH logic to map the fields of a {@link CardDto} onto a {@link CardEntity} just pulled
+ * from the database.
+ *
+ * @author jason
+ */
 @Mapper(componentModel = "spring")
 @Component
 public interface PatchMapper {

@@ -25,6 +25,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Unit tests for {@link JwtUserDetailsService}. Perform extensive use of Mockito and jUnit4 assertions.
+ * 
+ * @author jason 
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class JwtUserDetailsServiceUnitTests {
 

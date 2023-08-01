@@ -29,6 +29,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+/**
+ * Unit tests for {@link CardService}. Perform extensive use of Mockito and junit4 assertions. 
+ * 
+ * @author jason 
+ * 
+ * @see PaginationTestRunner
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class CardServiceUnitTests {
 

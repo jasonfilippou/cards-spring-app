@@ -5,6 +5,11 @@ import java.util.function.Predicate;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * A container for parameters used in pagination / sorting / filter aggregate GET queries.
+ * 
+ * @author jason 
+ */
 @Builder
 @Getter
 public class AggregateGetQueryParams {

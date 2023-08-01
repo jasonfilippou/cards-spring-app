@@ -9,6 +9,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+/**
+ * DTO class for Users.
+ * 
+ * @see UserEntity
+ * 
+ * @author jason 
+ */
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode

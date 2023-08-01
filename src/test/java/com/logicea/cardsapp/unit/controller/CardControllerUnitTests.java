@@ -24,6 +24,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * Unit tests for {@link CardController}. Perform extensive use of Mockito and jUnit4 assertions.
+ * 
+ * @author jason 
+ * 
+ * @see com.logicea.cardsapp.integration.CardsApplicationIntegrationTests
+ * @see com.logicea.cardsapp.unit.service.cards.CardServiceUnitTests
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class CardControllerUnitTests {
 

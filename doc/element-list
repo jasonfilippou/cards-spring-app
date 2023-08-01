@@ -1,0 +1,17 @@
+com.logicea.cardsapp
+com.logicea.cardsapp.config
+com.logicea.cardsapp.controller
+com.logicea.cardsapp.integration
+com.logicea.cardsapp.model
+com.logicea.cardsapp.model.card
+com.logicea.cardsapp.model.jwt
+com.logicea.cardsapp.model.user
+com.logicea.cardsapp.persistence
+com.logicea.cardsapp.service.cards
+com.logicea.cardsapp.service.jwtauthentication
+com.logicea.cardsapp.unit.controller
+com.logicea.cardsapp.unit.service.cards
+com.logicea.cardsapp.unit.service.jwtauthentication
+com.logicea.cardsapp.util
+com.logicea.cardsapp.util.exceptions
+com.logicea.cardsapp.util.logger

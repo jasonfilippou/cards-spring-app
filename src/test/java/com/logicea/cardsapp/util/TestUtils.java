@@ -26,6 +26,11 @@ import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 
+/**
+ * Various constants and helper methods for our tests.
+ * 
+ * @author jason 
+ */
 public final class TestUtils {
 
   private TestUtils() {}
