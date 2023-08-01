@@ -667,15 +667,15 @@ public class CardsApplicationIntegrationTests {
             .filterParams(Map.of(NAME_FILTER_STRING, NAME))
             .build(), 2);
     
-    // 8 cards share the same status. We will split them in 2 pages and request the last one.
+    // 5 cards share the same color. We will split them in 2 pages and request the last one.
     sortingAndPaginationAssertions(AggregateGetQueryParams
             .builder()
             .page(1)
-            .pageSize(5)
+            .pageSize(4)
             .sortByField("name")
             .sortOrder(SortOrder.DESC)
-            .filterParams(Map.of(STATUS_FILTER_STRING, STATUS.toString()))
-            .build(), 3);
+            .filterParams(Map.of(COLOR_FILTER_STRING, COLOR))
+            .build(), 1);
   }
 
   @Test
@@ -683,20 +683,17 @@ public class CardsApplicationIntegrationTests {
       whenWeSortByAField_andFilterByTwoAttributes_andRequestASpecificPage_thenWeGetThatPage() {
     adminLogin();
     postAllCards();
-
-    // There are 3 cards created within 5 minutes of NYE 2023 with a status of IN_PROGRESS.
-    // Put them in a page and ask for all of them.
-
+    
+    // There are 4 cards with name "MEME_CARD" and color "#45F780". 
     sortingAndPaginationAssertions(AggregateGetQueryParams
             .builder()
             .page(0)
-            .pageSize(3)
-            .sortByField("name")
+            .pageSize(4)
+            .sortByField("id")
             .sortOrder(SortOrder.ASC)
-            .filterParams(Map.of(STATUS_FILTER_STRING, STATUS.toString(),
-                    BEGIN_CREATION_DATE_FILTER_STRING, "31/12/2022 23:55:00.000",
-                    END_CREATION_DATE_FILTER_STRING, "01/01/2023 00:00:00.000"))
-            .build(), 3);
+            .filterParams(Map.of(NAME_FILTER_STRING, NAME,
+                    COLOR_FILTER_STRING, COLOR))
+            .build(), 4);
   }
 
   @Test
