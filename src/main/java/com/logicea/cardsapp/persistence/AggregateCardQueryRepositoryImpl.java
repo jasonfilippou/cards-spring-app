@@ -17,6 +17,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +74,9 @@ public class AggregateCardQueryRepositoryImpl implements AggregateCardQueryRepos
   private List<Predicate> extractPredicatesFromFilterParams(
       Map<String, String> params, CriteriaBuilder cb, Root<CardEntity> root, User user)
       throws ParseException {
+    if(params == null) {
+      return Collections.emptyList();
+    }
     // Have to be careful to use the exact names of the fields in CardDto.
     List<Predicate> retVal = Lists.newArrayList();
     if (params.containsKey(NAME_FILTER_STRING)) {

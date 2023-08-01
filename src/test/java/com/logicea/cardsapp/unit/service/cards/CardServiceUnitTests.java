@@ -324,7 +324,7 @@ public class CardServiceUnitTests {
       whenRepoReturnsASortedPage_andStatusAndDateOfCreationFiltersAreUsed_thenThatPageIsReturned() {
     SecurityContextHolder.getContext().setAuthentication(ADMIN_UPAT);
 
-    // There are 3 cards created within the last 5 minutes with a status of IN_PROGRESS.
+    // There are 3 cards created within 5 minutes of NYE 2023 with a status of IN_PROGRESS.
 
     // First, test a page of all 3 cards.
     PaginationTestRunner.<CardDto, CardEntity>builder()
