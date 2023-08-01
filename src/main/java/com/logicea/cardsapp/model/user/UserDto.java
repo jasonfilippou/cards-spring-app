@@ -21,14 +21,14 @@ import lombok.*;
 @EqualsAndHashCode
 public class UserDto {
 
-  @Schema(example = "jason.filippou@gmail.com")
+  @Schema(example = "m.giannarou@logicea.com")
   @NonNull
   @NotBlank
   @Email
   @Size(min = 5, max = 50)
   private String email;
 
-  @Schema(example = "jasonfilpassword")
+  @Schema(example = "mgiannaroupass")
   @JsonProperty(access = WRITE_ONLY)
   @NonNull
   @ToString.Exclude

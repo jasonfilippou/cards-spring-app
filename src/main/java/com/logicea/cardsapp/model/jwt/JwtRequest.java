@@ -23,13 +23,13 @@ public class JwtRequest implements Serializable {
 
   private static final long serialVersionId = 5926468583005150707L;
 
-  @Schema(example = "jason.filippou@gmail.com")
+  @Schema(example = "m.giannarou@logicea.com")
   @NonNull
   @NotBlank
   @Email
   private String email;
 
-  @Schema(example = "jasonfilpassword")
+  @Schema(example = "mgiannaroupass")
   @Size(min = 8, max = 30)
   @NonNull
   @ToString.Exclude

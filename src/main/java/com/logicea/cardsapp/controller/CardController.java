@@ -13,6 +13,10 @@ import com.logicea.cardsapp.util.exceptions.CardNameNotProvidedException;
 import com.logicea.cardsapp.util.exceptions.InvalidSortByFieldException;
 import com.logicea.cardsapp.util.logger.Logged;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -81,7 +85,10 @@ public class CardController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = CardDto.class))
+                  schema =  @Schema(
+                          type = "object",
+                          additionalProperties = Schema.AdditionalPropertiesValue.TRUE,
+                          ref = "#/components/schemas/FullCardDto"))
             }),
         @ApiResponse(
             responseCode = "400",
@@ -119,7 +126,10 @@ public class CardController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  schema = @Schema(implementation = CardDto.class))
+                  schema =  @Schema(
+                          type = "object",
+                          additionalProperties = Schema.AdditionalPropertiesValue.TRUE,
+                          ref = "#/components/schemas/FullCardDto"))
             }),
         @ApiResponse(
             responseCode = "401",
@@ -161,7 +171,10 @@ public class CardController {
             content = {
               @Content(
                   mediaType = "application/json",
-                  array = @ArraySchema(schema = @Schema(implementation = CardDto.class)))
+                  array = @ArraySchema(schema = @Schema(
+                          type = "object",
+                          additionalProperties = Schema.AdditionalPropertiesValue.TRUE,
+                          ref = "#/components/schemas/FullCardDto")))
             }),
         @ApiResponse(
             responseCode = "400",
@@ -178,6 +191,16 @@ public class CardController {
       })
   @GetMapping("/card")
   public ResponseEntity<CollectionModel<EntityModel<CardDto>>> aggregateGetCards(
+          @Parameter(
+                  name = "filterParams",
+                  in = ParameterIn.QUERY,
+                  schema =
+                  @Schema(
+                          type = "object",
+                          additionalProperties = Schema.AdditionalPropertiesValue.TRUE,
+                          ref = "#/components/schemas/FilterMap"),
+                  style = ParameterStyle.FORM,
+                  explode = Explode.TRUE)
       @RequestParam Map<String, String> filterParams,
       @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_IDX) @Min(0) Integer page,
       @RequestParam(name = "items_in_page", defaultValue = DEFAULT_PAGE_SIZE) @Min(1)
@@ -225,7 +248,10 @@ public class CardController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = CardDto.class))),
+                    schema =  @Schema(
+                            type = "object",
+                            additionalProperties = Schema.AdditionalPropertiesValue.TRUE,
+                            ref = "#/components/schemas/FullCardDto"))),
         @ApiResponse(
             responseCode = "400",
             description = "Card Name not provided",
@@ -271,7 +297,10 @@ public class CardController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = CardDto.class))),
+                    schema =  @Schema(
+                            type = "object",
+                            additionalProperties = Schema.AdditionalPropertiesValue.TRUE,
+                            ref = "#/components/schemas/FullCardDto"))),
         @ApiResponse(
             responseCode = "400",
             description = "Attempted to clear card name.",

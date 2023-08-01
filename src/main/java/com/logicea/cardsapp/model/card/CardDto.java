@@ -24,19 +24,23 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class CardDto {
   @Schema(example = "1", hidden = true)
   private Long id;
-  
+
+  @Schema(example = "Standup")
   @Size(max = 50)
   private String name;
 
+  @Schema(example = "Daily standup meeting")
   @Size(max = 100)
   private String description;
 
+  @Schema(example = "#5P091H")
   @Pattern(
       regexp = "^#[a-zA-Z0-9]{6}$|^$",
       message = "Color must start with # and end with exactly 6 alphanumerics, or be entirely empty.",
       flags = Pattern.Flag.CASE_INSENSITIVE)
   private String color;
 
+  @Schema(hidden = true)
   @Builder.Default private CardStatus status = CardStatus.TODO;
 
   @DateTimeFormat(pattern = GLOBAL_DATE_TIME_PATTERN)

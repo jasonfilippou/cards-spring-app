@@ -22,9 +22,10 @@ public final class Constants {
   public static final String DEFAULT_PAGE_SIZE = "5";
   public static final String DEFAULT_SORT_BY_FIELD = "id";
   public static final String DEFAULT_SORT_ORDER = "ASC";
-  public static final String NAME_FILTER_STRING = "name";
 
   // The following Strings are going to play the role of keys for our filter map.
+
+  public static final String NAME_FILTER_STRING = "name";
   public static final String COLOR_FILTER_STRING = "color";
   public static final String STATUS_FILTER_STRING = "status";
   public static final String BEGIN_CREATION_DATE_FILTER_STRING = "begin_date_created";

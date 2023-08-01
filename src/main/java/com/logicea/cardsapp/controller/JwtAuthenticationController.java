@@ -94,11 +94,7 @@ public class JwtAuthenticationController {
             responseCode = "400",
             description =
                 "Invalid password length provided; passwords should be from 8 to 30 characters.",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = UserDto.class))
-            }),
+            content = @Content),
         @ApiResponse(
             responseCode = "409",
             description = "Username already taken.",
