@@ -56,7 +56,10 @@ This will pull up the "Environments" tab, and you can set a variable called
 
 We have prepared  an `OpenApi` bean in class `OpenAPI30Configuration` and have several annotations in our 
 controllers and DTOs that make the OpenApi 3 page rendered in a user-friendly
-fashion. To authenticate using the OpenAPI page, make the same `POST` call described above
+fashion. Once the app is running, access the page by sending your browser to
+http://localhost:8080/swagger-ui/index.html#.
+
+To authenticate using the OpenAPI page, make the same `POST` call described above
 to the `cardsapi/authenticate` endpoint (make sure the user has been registered first!), copy the JWT token returned and then click on the "Authorize" button:
 
 ![Asking for JWT Token through OpenApi3.0](img/gettingJwtTokenFromOpenApi.png)
@@ -170,7 +173,7 @@ for the card itself and all the cards:
 }
 ```
 
-We use [SpringHATEOAS](https://spring.io/projects/spring-hateoas) to render
+We use some [SpringHATEOAS](https://spring.io/projects/spring-hateoas) `static` methods to render
 the links. Check the class `CardModelAssembler` for details.
 
 ### GET a card by ID
@@ -334,10 +337,10 @@ We should receive the following updated card.
 ```
 
 Notice that the `color` has now been null-ified since
-we did not provide it in the payload we PUT. As with the POST endpoint, a user MUST supply a name for the card.
-Notice that, as a design choice, when a user PUTs a card, the "created" audit information
+we did not provide it in the payload we PUT.
+Also notice that, as a design choice, when a user PUTs a card, the "created" audit information
 is NOT changed. The "last modified" information, on the other hand, is, of course, changed.
-
+As with the POST endpoint, a user MUST supply a name for the card.
 ### PATCH (update) a card
 
 Let's now PATCH the same card by changing its color and status. Send a `PATCH` with the following payload to
@@ -375,7 +378,8 @@ You should receive:
 ```
 
 The PATCH endpoint ignores fields that are missing or `NULL`, assuming that the user simply does not 
-want to change those fields. Additionally, if the 
+want to change those fields. For example, neither the `name` nor the `descripton` attributes of
+this card were changed. Additionally, if the 
 user attempts to clear the name of a card by supplying a whitespace-only string, they will receive a 
 `400 BAD_request` response; we do not allow for the clearing of the name field.
 
@@ -387,7 +391,7 @@ the card above can be deleted by sending a `DELETE` request at `cardsapi/cards/1
 Note that our semantics for `DELETE` are "hard-delete". Calling `DELETE` on an ID
 removes the physical entry from the database. We also return a `404 NOT_FOUND` Http error
 if the ID we want to DELETE is not in the database. The community seems to be divided on whether
-one should return a `204` or a `404` on this case, and what exactly is meant by "idempotent" when
+one should return a `204` or a `404` in this case, and what exactly is meant by "idempotent" when
 we say that "DELETE should be an idempotent operation".
 
 ## Testing
