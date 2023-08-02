@@ -1,0 +1,429 @@
+{
+	"info": {
+		"_postman_id": "93739766-2660-4376-8d48-69a273fd8cdd",
+		"name": "Cards App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25468123"
+	},
+	"item": [
+		{
+			"name": "user-auth",
+			"item": [
+				{
+					"name": "Registration",
+					"item": [
+						{
+							"name": "Register Maria as Admin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspassword\",\n    \"role\" : \"MEMBER\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/cardsapi/register",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"cardsapi",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Dimitris as Member",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspassword\",\n    \"role\" : \"MEMBER\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/cardsapi/register",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"cardsapi",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Orestis as Member",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspassword\",\n    \"role\" : \"MEMBER\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/cardsapi/register",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"cardsapi",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Three calls for registration of Maria, Dimitris and Orestis."
+				},
+				{
+					"name": "Login",
+					"item": [],
+					"description": "Three calls for login of Maria, Orestis and Dimitris."
+				},
+				{
+					"name": "Maria Logs in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"jason.filippou@gmail.com\",\n    \"password\" : \"jasonfilpassword\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cardsapi/authenticate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dimitris Logs in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"jason.filippou@gmail.com\",\n    \"password\" : \"jasonfilpassword\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cardsapi/authenticate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Orestis Logs in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"jason.filippou@gmail.com\",\n    \"password\" : \"jasonfilpassword\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cardsapi/authenticate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Calling endpoints for user authentication."
+		},
+		{
+			"name": "card-calls",
+			"item": [
+				{
+					"name": "Store Card",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"DC3\",\n    \"description\" : \"Dimitris' third card\",\n    \"color\": \"#093GGG\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cardsapi/card",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Cards by filters",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{BEARER_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "created_by",
+									"value": "o.ktenas@logicea.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "Orestis's Card",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/cardsapi/card",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"card"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "items_in_page",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sort_by_field",
+									"value": "color",
+									"disabled": true
+								},
+								{
+									"key": "sort_order",
+									"value": "ASC",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Card by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/cardsapi/card/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"card",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Card by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/cardsapi/card/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"card",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Card",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"    \",\n    \"description\" : \"Orestis' Replacement of his second Card\",\n    \"color\": \"#AABB90\",\n    \"status\" : \"DONE\"\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cardsapi/card/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"card",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Card",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\" : \"\",\n    \"status\" : \"DONE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/cardsapi/card/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"card",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints of the application for manipulating cards."
+		}
+	]
+}

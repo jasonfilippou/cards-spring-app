@@ -63,6 +63,7 @@ public class OpenAPI30Configuration {
                         .addProperty(COLOR_FILTER_STRING, new StringSchema().example("#5P091H"))
                         .addProperty(
                             STATUS_FILTER_STRING, new StringSchema().example("IN_PROGRESS"))
+                        .addProperty(CREATING_USER_FILTER_STRING, new StringSchema().example("d.polissiou@logicea.com"))
                         .addProperty(
                             BEGIN_CREATION_DATE_FILTER_STRING,
                             new StringSchema().example("12/07/2012 00:00:00.000"))
@@ -73,7 +74,8 @@ public class OpenAPI30Configuration {
                     "FullCardDto",
                     new Schema<Map<String, String>>()
                         .addProperty(NAME_FILTER_STRING, new StringSchema().example("Standup"))
-                        .addProperty("description", new StringSchema().example("Daily standup meeting"))
+                        .addProperty(
+                            "description", new StringSchema().example("Daily standup meeting"))
                         .addProperty(COLOR_FILTER_STRING, new StringSchema().example("#5P091H"))
                         .addProperty(STATUS_FILTER_STRING, new StringSchema().example("TODO"))
                         .addProperty(
