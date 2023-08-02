@@ -115,7 +115,6 @@ After registering, you should receive a JSON with just your username (password o
 To receive the Bearer Token, `POST` your username and password
 to the `/cardsapi/authenticate` endpoint, for example:
 
-
 ```json
 {
     "email" : "m.giannarou@logicea.com",

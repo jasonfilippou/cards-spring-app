@@ -19,7 +19,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspassword\",\n    \"role\" : \"MEMBER\"\n}",
+									"raw": "{\n    \"email\" : \"m.giannarou@logicea.com\",\n    \"password\" : \"mgiannaroupass\",\n    \"role\" : \"ADMIN\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -47,7 +47,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspassword\",\n    \"role\" : \"MEMBER\"\n}",
+									"raw": "{\n    \"email\" : \"d.polissiou@logicea.com\",\n    \"password\" : \"dpolissioupass\",\n    \"role\" : \"MEMBER\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -75,7 +75,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspassword\",\n    \"role\" : \"MEMBER\"\n}",
+									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspass\",\n    \"role\" : \"MEMBER\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -101,92 +101,93 @@
 				},
 				{
 					"name": "Login",
-					"item": [],
+					"item": [
+						{
+							"name": "Dimitris Logs in",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"d.polissiou@logicea.com\",\n    \"password\" : \"dpolissioupass\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/cardsapi/authenticate",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"cardsapi",
+										"authenticate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Orestis Logs in",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"o.ktenas@logicea.com\",\n    \"password\" : \"oktenaspass\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/cardsapi/authenticate",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"cardsapi",
+										"authenticate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Maria Logs in",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\" : \"m.giannarou@logicea.com\",\n    \"password\" : \"mgiannaroupass\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/cardsapi/authenticate",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"cardsapi",
+										"authenticate"
+									]
+								}
+							},
+							"response": []
+						}
+					],
 					"description": "Three calls for login of Maria, Orestis and Dimitris."
-				},
-				{
-					"name": "Maria Logs in",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\" : \"jason.filippou@gmail.com\",\n    \"password\" : \"jasonfilpassword\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cardsapi/authenticate",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cardsapi",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Dimitris Logs in",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\" : \"jason.filippou@gmail.com\",\n    \"password\" : \"jasonfilpassword\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cardsapi/authenticate",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cardsapi",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Orestis Logs in",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\" : \"jason.filippou@gmail.com\",\n    \"password\" : \"jasonfilpassword\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/cardsapi/authenticate",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cardsapi",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
 				}
 			],
 			"description": "Calling endpoints for user authentication."
@@ -207,7 +208,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\" : \"DC3\",\n    \"description\" : \"Dimitris' third card\",\n    \"color\": \"#093GGG\"\n}",
+							"raw": "{\n    \"name\" : \"Card-1\",\n    \"description\" : \"My first card\",\n    \"color\" : \"#A89012\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -223,6 +224,32 @@
 							"path": [
 								"cardsapi",
 								"card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Card by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/cardsapi/card/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"cardsapi",
+								"card",
+								"1"
 							]
 						}
 					},
@@ -252,20 +279,19 @@
 							"formdata": [
 								{
 									"key": "created_by",
-									"value": "o.ktenas@logicea.com",
-									"type": "text",
-									"disabled": true
+									"value": "m.giannarou@logicea.com",
+									"type": "text"
 								},
 								{
-									"key": "name",
-									"value": "Orestis's Card",
+									"key": "",
+									"value": "",
 									"type": "text",
 									"disabled": true
 								}
 							]
 						},
 						"url": {
-							"raw": "localhost:8080/cardsapi/card",
+							"raw": "localhost:8080/cardsapi/card?page=0&items_in_page=3&sort_by_field=color&sort_order=ASC",
 							"host": [
 								"localhost"
 							],
@@ -277,50 +303,20 @@
 							"query": [
 								{
 									"key": "page",
-									"value": "1",
-									"disabled": true
+									"value": "0"
 								},
 								{
 									"key": "items_in_page",
-									"value": "5",
-									"disabled": true
+									"value": "3"
 								},
 								{
 									"key": "sort_by_field",
-									"value": "color",
-									"disabled": true
+									"value": "color"
 								},
 								{
 									"key": "sort_order",
-									"value": "ASC",
-									"disabled": true
+									"value": "ASC"
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Retrieve Card by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{BEARER_TOKEN}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:8080/cardsapi/card/5",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"cardsapi",
-								"card",
-								"5"
 							]
 						}
 					},
@@ -338,7 +334,7 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/cardsapi/card/5",
+							"raw": "localhost:8080/cardsapi/card/1",
 							"host": [
 								"localhost"
 							],
@@ -346,7 +342,7 @@
 							"path": [
 								"cardsapi",
 								"card",
-								"5"
+								"1"
 							]
 						}
 					},
@@ -365,7 +361,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\" : \"    \",\n    \"description\" : \"Orestis' Replacement of his second Card\",\n    \"color\": \"#AABB90\",\n    \"status\" : \"DONE\"\n    \n}",
+							"raw": "{\n    \"name\" : \"CARD-1-REPLACEMENT\",\n    \"description\" : \"Replacement of card 1\",\n    \"status\" : \"IN_PROGRESS\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -373,7 +369,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/cardsapi/card/5",
+							"raw": "localhost:8080/cardsapi/card/1",
 							"host": [
 								"localhost"
 							],
@@ -381,7 +377,7 @@
 							"path": [
 								"cardsapi",
 								"card",
-								"5"
+								"1"
 							]
 						}
 					},
@@ -400,7 +396,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\" : \"\",\n    \"status\" : \"DONE\"\n}",
+							"raw": "{\n    \"color\" : \"#FFFFFF\",\n    \"status\" : \"DONE\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
