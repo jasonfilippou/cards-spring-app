@@ -1,6 +1,6 @@
 package com.logicea.cardsapp.util;
 
-import static com.logicea.cardsapp.util.Constants.JWT_TOKEN_VALIDITY;
+import static com.logicea.cardsapp.util.Constants.JWT_VALIDITY;
 
 import com.logicea.cardsapp.controller.JwtAuthenticationController;
 import com.logicea.cardsapp.service.jwtauthentication.JwtAuthenticationService;
@@ -93,7 +93,7 @@ public class JwtTokenUtil implements Serializable {
         .setClaims(claims)
         .setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+        .setExpiration(new Date(System.currentTimeMillis() + JWT_VALIDITY * 1000))
         .signWith(SignatureAlgorithm.HS512, secret)
         .compact();
   }
