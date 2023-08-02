@@ -79,7 +79,7 @@ public final class TestUtils {
                         .id(++currentCardId)
                         .name("CARD #" + currentCardId)
                         .description("Description of card: " + currentCardId)
-                        .color("#45F281")
+                        .color("#AB0910")
                         .status(STATUS)
                         .createdDateTime(LocalDateTime.now().minusDays(2L))
                         .build()));
@@ -100,16 +100,16 @@ public final class TestUtils {
                         .id(++currentCardId)
                         .name(NAME)
                         .description("Description of card: " + currentCardId)
-                        .color("#4F141B")
+                        .color("#4A316F")
                         .status(CardStatus.TODO)
                         .createdDateTime(LocalDateTime.now().minusDays(2L))
                         .build()));
     return retVal;
   }
 
-  // Get n DTOs of color #45F780
+  // Get n DTOs of color #45B780
 
-  public static final String COLOR = "#45F780";
+  public static final String COLOR = "#45B780";
 
   public static List<CardDto> getNDtosOfSpecificColor(int n) {
     List<CardDto> retVal = Lists.newArrayListWithCapacity(n);
@@ -127,6 +127,7 @@ public final class TestUtils {
                         .build()));
     return retVal;
   }
+
   // Get n DTOs that were created in a decreasing number of minutes before New Year's Eve 2023.
   
   public static List<CardDto> getNDtosOfIncreasingCreatedTime(int n) {
@@ -139,7 +140,7 @@ public final class TestUtils {
                         .id(++currentCardId)
                         .name("CARD #" + currentCardId)
                         .description("Description of card: " + currentCardId)
-                        .color("#4F123O")
+                        .color("#4D1210")
                         .status((i < n / 2) ? CardStatus.DONE : STATUS) // To add some variability in the queries.
                         .createdDateTime(LocalDateTime.parse("01/01/2023 00:00:00.000", DATE_TIME_FORMATTER)
                                 .minusMinutes(n - i))

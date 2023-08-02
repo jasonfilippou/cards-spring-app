@@ -73,7 +73,7 @@ public class CardControllerUnitTests {
     
     @Test(expected = CardNameNotProvidedException.class)
     public void whenUserDoesNotProvideANameForCard_thenCardNameNotProvidedExceptionisThrown(){
-        cardController.postCard(CardDto.builder().color("#9kL042").build());
+        cardController.postCard(CardDto.builder().color("#9aA042").build());
     }
 
     /* GET ALL tests */
@@ -101,7 +101,7 @@ public class CardControllerUnitTests {
     
     @Test(expected = CardNameNotProvidedException.class)
     public void whenAttemptingToReplaceACardWithANamelessCard_thenCardNameNotProvidedExceptionIsThrown(){
-        cardController.putCard(1L, CardDto.builder().description("desc").color("#45HJLP").build());
+        cardController.putCard(1L, CardDto.builder().description("desc").color("#45EFAB").build());
     }
     
     /* PATCH tests */

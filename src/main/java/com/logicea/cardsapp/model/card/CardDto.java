@@ -33,10 +33,10 @@ public class CardDto {
   @Size(max = 100)
   private String description;
 
-  @Schema(example = "#5P091H")
+  @Schema(example = "#75821E")
   @Pattern(
-      regexp = "^#[a-zA-Z0-9]{6}$|^$",
-      message = "Color must start with # and end with exactly 6 alphanumerics, or be entirely empty.",
+      regexp = "^#[a-fA-F0-9]{6}$|^$",
+      message = "Color must start with # and end with exactly 6 hex characters, or be entirely empty.",
       flags = Pattern.Flag.CASE_INSENSITIVE)
   private String color;
 

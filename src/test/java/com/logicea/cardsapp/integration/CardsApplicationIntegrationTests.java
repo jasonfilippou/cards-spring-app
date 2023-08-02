@@ -132,7 +132,7 @@ public class CardsApplicationIntegrationTests {
             .id(1L)
             .name("TST-1")
             .description("desc")
-            .color("#45GI90")
+            .color("#45A891")
             .build();
     ResponseEntity<EntityModel<CardDto>> responseEntity = cardController.postCard(cardOneDto);
     assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
@@ -166,7 +166,7 @@ public class CardsApplicationIntegrationTests {
     CardDto cardDtoOne = CardDto.builder()
             .id(1L)
             .name("TST-1")
-            .color("#45JH09")
+            .color("#45C909")
             .description("Such a nice card!")
             .build();
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(cardDtoOne);
@@ -179,7 +179,7 @@ public class CardsApplicationIntegrationTests {
     CardDto carDtoTwo = CardDto.builder()
             .id(2L)
             .name("TST-2")
-            .color("#56HQ91")
+            .color("#56AA91")
             .description("Another nice card.")
             .build();
     postResponse = cardController.postCard(carDtoTwo);
@@ -230,7 +230,7 @@ public class CardsApplicationIntegrationTests {
             .id(1L)
             .name("TST")
             .description("desc")
-            .color("#45GI90")
+            .color("#45FF90")
             .build();
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(cardDto);
     final Long postedCardId = postResponse.getBody().getContent().getId();
@@ -261,7 +261,7 @@ public class CardsApplicationIntegrationTests {
             .id(1L)
             .name("TST")
             .description("desc")
-            .color("#45GI90")
+            .color("#45EA90")
             .build();
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(postedDto);
     final Long postedId = postResponse.getBody().getContent().getId();
@@ -284,7 +284,7 @@ public class CardsApplicationIntegrationTests {
             .id(1L)
             .name("TST")
             .description("desc")
-            .color("#45GI90")
+            .color("#452B90")
             .build();
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(postedDto);
     final Long cardId = postResponse.getBody().getContent().getId();
@@ -332,7 +332,7 @@ public class CardsApplicationIntegrationTests {
             .id(1L)
             .name("TST")
             .description("desc")
-            .color("#45GI90")
+            .color("#453C90")
             .build();
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(postedDto);
     final Long cardId = postResponse.getBody().getContent().getId();
@@ -372,7 +372,7 @@ public class CardsApplicationIntegrationTests {
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(postedDto);
     final Long cardId = postResponse.getBody().getContent().getId();
     CardDto patchOne =
-        CardDto.builder().name("New name").color("#90FG42").status(CardStatus.IN_PROGRESS).build();
+        CardDto.builder().name("New name").color("#DA86DF").status(CardStatus.IN_PROGRESS).build();
     ResponseEntity<EntityModel<CardDto>> patchResponse = cardController.patchCard(cardId, patchOne);
     assertTrue(
         cardDtosEqual(
@@ -409,7 +409,7 @@ public class CardsApplicationIntegrationTests {
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(postedDto);
     final Long cardId = postResponse.getBody().getContent().getId();
     CardDto patchOne =
-        CardDto.builder().name("New name").color("#90FG42").status(CardStatus.IN_PROGRESS).build();
+        CardDto.builder().name("New name").color("#DA86DF").status(CardStatus.IN_PROGRESS).build();
     cardController.patchCard(cardId, patchOne);
     ResponseEntity<EntityModel<CardDto>> getResponse = cardController.getCard(cardId);
     assertEquals(HttpStatus.OK, getResponse.getStatusCode());
@@ -434,7 +434,7 @@ public class CardsApplicationIntegrationTests {
     final Long cardId = postResponse.getBody().getContent().getId();
     memberOneLogin();
     CardDto patchOne =
-        CardDto.builder().name("New name").color("#90FG42").status(CardStatus.IN_PROGRESS).build();
+        CardDto.builder().name("New name").color("#DD09AE").status(CardStatus.IN_PROGRESS).build();
     cardController.patchCard(cardId, patchOne);
   }
 
@@ -447,7 +447,7 @@ public class CardsApplicationIntegrationTests {
     final Long cardId = postResponse.getBody().getContent().getId();
     memberTwoLogin();
     CardDto patchOne =
-        CardDto.builder().name("New name").color("#90FG42").status(CardStatus.IN_PROGRESS).build();
+        CardDto.builder().name("New name").color("#90FB42").status(CardStatus.IN_PROGRESS).build();
     cardController.patchCard(cardId, patchOne);
   }
 
@@ -460,7 +460,7 @@ public class CardsApplicationIntegrationTests {
     final Long cardId = postResponse.getBody().getContent().getId();
     adminLogin();
     CardDto patchOne =
-        CardDto.builder().name("New name").color("#90FG42").status(CardStatus.IN_PROGRESS).build();
+        CardDto.builder().name("New name").color("#DA86DF").status(CardStatus.IN_PROGRESS).build();
     ResponseEntity<EntityModel<CardDto>> patchResponse = cardController.patchCard(cardId, patchOne);
     assertTrue(
         cardDtosEqual(
@@ -477,7 +477,7 @@ public class CardsApplicationIntegrationTests {
   @Test(expected = CardNotFoundException.class)
   public void whenApplyingAPatchOnANonExistentId_thenResourceCannotBeFound() {
     adminLogin();
-    cardController.patchCard(1L, CardDto.builder().color("#45KLo1").build());
+    cardController.patchCard(1L, CardDto.builder().color("#45AA91").build());
   }
 
   @Test(expected = CardNameCannotBeBlankException.class)
@@ -487,7 +487,7 @@ public class CardsApplicationIntegrationTests {
     ResponseEntity<EntityModel<CardDto>> postResponse = cardController.postCard(postedDto);
     final Long cardId = postResponse.getBody().getContent().getId();
     CardDto patchOne =
-        CardDto.builder().name("").color("#90FG42").status(CardStatus.IN_PROGRESS).build();
+        CardDto.builder().name("").color("#90DB42").status(CardStatus.IN_PROGRESS).build();
     cardController.patchCard(cardId, patchOne);
   }
 

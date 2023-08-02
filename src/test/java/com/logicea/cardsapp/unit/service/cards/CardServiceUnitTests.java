@@ -54,7 +54,7 @@ public class CardServiceUnitTests {
           .name("CARD-1")
           .description("A test card with ID 1")
           .status(CardStatus.TODO)
-          .color("#G78JK0")
+          .color("#B70AC1")
           .build();
 
   private static final CardEntity CARD_ENTITY =
