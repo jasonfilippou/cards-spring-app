@@ -14,6 +14,8 @@ import io.jsonwebtoken.security.Keys;
 import java.io.Serial;
 import java.io.Serializable;
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,10 +53,12 @@ public class JwtTokenUtil implements Serializable {
    * Retrieve the expiration date of the token.
    *
    * @param token The token to retrieve the expiration date from.
-   * @return A {@link Date} instance representing the moment in time that the token will expire.
+   * @return A {@link LocalDateTime} instance representing the moment in time that the token will expire.
    */
-  public Date getExpirationDateFromToken(String token) {
-    return getClaimFromToken(token, Claims::getExpiration);
+  public LocalDateTime getExpirationDateFromToken(String token) {
+    return getClaimFromToken(token, Claims::getExpiration).toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -68,8 +72,8 @@ public class JwtTokenUtil implements Serializable {
 
   // check if the token has expired
   private Boolean isTokenExpired(String token) {
-    final Date expiration = getExpirationDateFromToken(token);
-    return expiration.before(new Date());
+    final LocalDateTime expiration = getExpirationDateFromToken(token);
+    return expiration.isBefore(LocalDateTime.now());
   }
 
   /**
